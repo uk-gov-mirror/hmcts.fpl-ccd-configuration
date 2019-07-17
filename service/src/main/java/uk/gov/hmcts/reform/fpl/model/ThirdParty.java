@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class OtherParty extends Party {
+public class ThirdParty extends Party {
     private final String name;
     private final String gender;
     private final String genderIdentification;
@@ -23,8 +23,7 @@ public class OtherParty extends Party {
     private final String litigationIssuesDetails;
 
     @Builder
-    private OtherParty(String partyID,
-                       String idamID,
+    private ThirdParty(String partyID,
                        String partyType,
                        String title,
                        String firstName,
@@ -43,7 +42,7 @@ public class OtherParty extends Party {
                        String detailsHiddenReason,
                        String litigationIssues,
                        String litigationIssuesDetails) {
-        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address, email,
+        super(partyID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address, email,
             telephoneNumber);
 
         this.name = name;

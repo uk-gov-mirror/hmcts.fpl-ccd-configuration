@@ -15,10 +15,10 @@ public class OthersMigrationService {
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
 
-        if (caseDetails.getData().containsKey("others1") || !caseDetails.getData().containsKey("others")) {
+        if (caseDetails.getData().containsKey("thirdParties") || !caseDetails.getData().containsKey("others")) {
             data.put("othersMigrated", "Yes");
 
-            if (!caseDetails.getData().containsKey("others1")) {
+            if (!caseDetails.getData().containsKey("thirdParties")) {
                 List<Map<String, Object>> populatedRespondent = new ArrayList<>();
                 populatedRespondent.add(ImmutableMap.of(
                     "id", UUID.randomUUID().toString(),
@@ -28,7 +28,7 @@ public class OthersMigrationService {
                         )
                     ))
                 );
-                data.put("others1", populatedRespondent);
+                data.put("thirdParties", populatedRespondent);
             }
         } else {
             data.put("othersMigrated", "No");
