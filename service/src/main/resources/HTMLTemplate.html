@@ -1538,211 +1538,383 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--two">
-    Other
+  {% if case_data.others is not empty %}
+    <h3 class="heading heading--two">
+      Other
+      {% if case_data.others is not empty and
+      case_data.others.additionalOthers is not empty %}
+      1
+      {% endif %}
+    </h3>
+    <dl class="data-list">
+      <div class="data-list__row">
+        <dt class="data-list__title">Name</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.name is not empty %}
+            {{ case_data.others.firstOther.name }}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Date of birth</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.DOB is not empty %}
+            {{ case_data.others.firstOther.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Gender</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.gender is not empty %}
+            {% if case_data.others.firstOther.gender == 'They identify in another way'
+            and case_data.others.firstOther.genderIdentification is not empty %}
+              {{ case_data.others.firstOther.genderIdentification }}
+            {% else %}
+              {{ case_data.others.firstOther.gender }}
+            {% endif %}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Place of birth</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.birthPlace is not empty %}
+            {{ case_data.others.firstOther.birthPlace }}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Current address</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.address is not empty %}
+            {% if case_data.others.firstOther.address.AddressLine1 is not empty %}
+              <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine1 }}</span>
+            {% endif %}
+            {% if case_data.others.firstOther.address.AddressLine2 is not empty %}
+              <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine2 }}</span>
+            {% endif %}
+            {% if case_data.others.firstOther.address.AddressLine3 is not empty %}
+              <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine3 }}</span>
+            {% endif %}
+            {% if case_data.others.firstOther.address.PostTown is not empty %}
+              <span class="u-comma-before">{{ case_data.others.firstOther.address.PostTown }}</span>
+            {% endif %}
+            {% if case_data.others.firstOther.address.PostCode is not empty %}
+              <span class="u-comma-before">{{ case_data.others.firstOther.address.PostCode }}</span>
+            {% endif %}
+            {% if case_data.others.firstOther.address.County is not empty %}
+              <span class="u-comma-before">{{ case_data.others.firstOther.address.County }}</span>
+            {% endif %}
+            {% if case_data.others.firstOther.address.Country is not empty %}
+              <span class="u-comma-before">{{ case_data.others.firstOther.address.Country }}</span>
+            {% endif %}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Telephone number</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.telephone is not empty %}
+            {{ case_data.others.firstOther.telephone }}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Relationship to the child or children</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.childInformation is not empty %}
+            <span class="u-block">{{ case_data.others.firstOther.childInformation }}</span>
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Interpreter</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Spoken or written Welsh</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Intermediary</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Facilities or assistance for a disability</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Separate waiting room or other security measures</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Litigation capacity issues</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.litigationIssues is not empty %}
+            {% if case_data.others.firstOther.litigationIssues == 'YES' %}
+              <span class="u-block">Yes</span>
+              {% if case_data.others.firstOther.litigationIssuesDetails is not empty %}
+                <span class="u-block">{{ case_data.others.firstOther.litigationIssuesDetails }}</span>
+              {% endif %}
+            {% elseif case_data.others.firstOther.litigationIssues == 'NO' %}
+              <span class="u-block">No</span>
+            {% else %}
+              <span class="u-block">Don't know</span>
+            {% endif %}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Anything else to help take part in the proceedings</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Confidential contact details</dt>
+        <dd class="data-list__definition">
+          {% if case_data.others is not empty and
+          case_data.others.firstOther is not empty and
+          case_data.others.firstOther.detailsHidden is not empty %}
+            {{ case_data.others.firstOther.detailsHidden }}
+          {% if case_data.others.firstOther.detailsHiddenReason is not empty %}
+            <span class="u-block">{{ case_data.others.firstOther.detailsHiddenReason }}</span>
+          {% endif %}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
+
     {% if case_data.others is not empty and
     case_data.others.additionalOthers is not empty %}
-     1
+      {% if case_data.others is not empty and case_data.others.firstOther is not empty %}
+        {% set counter = 2 %}
+      {% else %}
+        {% set counter = 1 %}
+      {% endif %}
+      {% for other in case_data.others.additionalOthers %}
+        {% if other is not empty and other.value is not empty %}
+          <h3 class="heading heading--two">Other {{ counter }}</h3>
+          <dl class="data-list">
+            <div class="data-list__row">
+              <dt class="data-list__title">Name</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and other.value.name is not empty %}
+                  {{ other.value.name }}
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Date of birth</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and other.value.DOB is not empty %}
+                  {{ other.value.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Gender</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and
+                other.value.gender is not empty %}
+                  {% if other.value.gender == 'They identify in another way'
+                  and other.value.genderIdentification is not empty %}
+                    {{ other.value.genderIdentification }}
+                  {% else %}
+                    {{ other.value.gender }}
+                  {% endif %}
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Place of birth</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and other.value.birthPlace is not empty %}
+                  {{ other.value.birthPlace }}
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Current address</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and other.value.address is not empty %}
+                  {% if other.value.address.AddressLine1 is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.AddressLine1 }}</span>
+                  {% endif %}
+                  {% if other.value.address.AddressLine2 is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.AddressLine2 }}</span>
+                  {% endif %}
+                  {% if other.value.address.AddressLine3 is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.AddressLine3 }}</span>
+                  {% endif %}
+                  {% if other.value.address.PostTown is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.PostTown }}</span>
+                  {% endif %}
+                  {% if other.value.address.PostCode is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.PostCode }}</span>
+                  {% endif %}
+                  {% if other.value.address.County is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.County }}</span>
+                  {% endif %}
+                  {% if other.value.address.Country is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.Country }}</span>
+                  {% endif %}
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Telephone number</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and other.value.telephone is not empty %}
+                  {{ other.value.telephone }}
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Relationship to the child</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and other.value.childInformation is not empty %}
+                  <span class="u-block">{{ other.value.childInformation }}</span>
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Interpreter</dt>
+              <dd class="data-list__definition">-</dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Spoken or written Welsh</dt>
+              <dd class="data-list__definition">-</dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Intermediary</dt>
+              <dd class="data-list__definition">-</dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Facilities or assistance for a disability</dt>
+              <dd class="data-list__definition">-</dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Separate waiting room or other security measures</dt>
+              <dd class="data-list__definition">-</dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Litigation capacity issues</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and
+                other.value.litigationIssues  is not empty %}
+                  {% if other.value.litigationIssues == 'YES' %}
+                    <span class="u-block">Yes</span>
+                    {% if other.value.litigationIssuesDetails is not empty %}
+                      <span class="u-block">{{ other.value.litigationIssuesDetails }}</span>
+                    {% endif %}
+                  {% elseif other.value.litigationIssues == 'NO' %}
+                    <span class="u-block">No</span>
+                  {% else %}
+                    <span class="u-block">Don't know</span>
+                  {% endif %}
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Anything else to help take part in the proceedings</dt>
+              <dd class="data-list__definition">-</dd>
+            </div>
+            <div class="data-list__row">
+              <dt class="data-list__title">Confidential contact details</dt>
+              <dd class="data-list__definition">
+                {% if other.value is not empty and other.value.detailsHidden is not empty %}
+                  {{ other.value.detailsHidden }}
+                {% if other.value.detailsHiddenReason is not empty %}
+                  <span class="u-block">{{ other.value.detailsHiddenReason }}</span>
+                {% endif %}
+                {% else %}
+                  -
+                {% endif %}
+              </dd>
+            </div>
+          </dl>
+          {% endif %}
+        {% set counter = counter + 1 %}
+      {% endfor %}
     {% endif %}
-  </h3>
-  <dl class="data-list">
-    <div class="data-list__row">
-      <dt class="data-list__title">Name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.name is not empty %}
-          {{ case_data.others.firstOther.name }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Date of birth</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.DOB is not empty %}
-          {{ case_data.others.firstOther.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Gender</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.gender is not empty %}
-          {% if case_data.others.firstOther.gender == 'They identify in another way'
-          and case_data.others.firstOther.genderIdentification is not empty %}
-            {{ case_data.others.firstOther.genderIdentification }}
-          {% else %}
-            {{ case_data.others.firstOther.gender }}
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Place of birth</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.birthPlace is not empty %}
-          {{ case_data.others.firstOther.birthPlace }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Current address</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.address is not empty %}
-          {% if case_data.others.firstOther.address.AddressLine1 is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine1 }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.AddressLine2 is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine2 }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.AddressLine3 is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine3 }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.PostTown is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.PostTown }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.PostCode is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.PostCode }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.County is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.County }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.Country is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.Country }}</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Telephone number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.telephone is not empty %}
-          {{ case_data.others.firstOther.telephone }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Relationship to the child or children</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.childInformation is not empty %}
-          <span class="u-block">{{ case_data.others.firstOther.childInformation }}</span>
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Interpreter</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Spoken or written Welsh</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Intermediary</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Facilities or assistance for a disability</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Separate waiting room or other security measures</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Litigation capacity issues</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.litigationIssues is not empty %}
-          {% if case_data.others.firstOther.litigationIssues == 'YES' %}
-            <span class="u-block">Yes</span>
-            {% if case_data.others.firstOther.litigationIssuesDetails is not empty %}
-              <span class="u-block">{{ case_data.others.firstOther.litigationIssuesDetails }}</span>
-            {% endif %}
-          {% elseif case_data.others.firstOther.litigationIssues == 'NO' %}
-            <span class="u-block">No</span>
-          {% else %}
-            <span class="u-block">Don't know</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Anything else to help take part in the proceedings</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Confidential contact details</dt>
-      <dd class="data-list__definition">
-        {% if case_data.others is not empty and
-        case_data.others.firstOther is not empty and
-        case_data.others.firstOther.detailsHidden is not empty %}
-          {{ case_data.others.firstOther.detailsHidden }}
-        {% if case_data.others.firstOther.detailsHiddenReason is not empty %}
-          <span class="u-block">{{ case_data.others.firstOther.detailsHiddenReason }}</span>
-        {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-  </dl>
 
-  {% if case_data.others is not empty and
-  case_data.others.additionalOthers is not empty %}
-    {% if case_data.others is not empty and case_data.others.firstOther is not empty %}
-      {% set counter = 2 %}
-    {% else %}
-      {% set counter = 1 %}
-    {% endif %}
-    {% for other in case_data.others.additionalOthers %}
-      {% if other is not empty and other.value is not empty %}
+  {% elseif case_data.thirdParties is not empty %}
+    {% set counter = 1 %}
+    {% for thirdParty in case_data.thirdParties %}
+      {% if thirdParty is not empty and thirdParty.value is not empty and thirdParty.value.party is not empty %}
         <h3 class="heading heading--two">Other {{ counter }}</h3>
         <dl class="data-list">
           <div class="data-list__row">
             <dt class="data-list__title">Name</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.name is not empty %}
-                {{ other.value.name }}
-              {% else %}
-                -
-              {% endif %}
+                {% if thirdParty.value.party.firstName is not empty or
+                thirdParty.value.party.lastName is not empty %}
+                  {% if thirdParty.value.party.firstName is not empty %}
+                    {{ thirdParty.value.party.firstName }} 
+                  {% endif %}
+                  {% if thirdParty.value.party.lastName is not empty %}
+                    {{ thirdParty.value.party.lastName }}
+                  {% endif %}
+                {% else %}
+                  -
+                {% endif %}
             </dd>
           </div>
           <div class="data-list__row">
             <dt class="data-list__title">Date of birth</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.DOB is not empty %}
-                {{ other.value.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+              {% if thirdParty.value.party.dateOfBirth is not empty %}
+                {{ thirdParty.value.party.dateOfBirth | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
               {% else %}
                 -
               {% endif %}
@@ -1751,13 +1923,12 @@
           <div class="data-list__row">
             <dt class="data-list__title">Gender</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and
-              other.value.gender is not empty %}
-                {% if other.value.gender == 'They identify in another way'
-                and other.value.genderIdentification is not empty %}
-                  {{ other.value.genderIdentification }}
+              {% if other.value.gender is not empty %}
+                {% if thirdParty.value.party.gender == 'They identify in another way'
+                and thirdParty.value.party.genderIdentification is not empty %}
+                  {{ thirdParty.value.party.genderIdentification }}
                 {% else %}
-                  {{ other.value.gender }}
+                  {{ thirdParty.value.party.gender }}
                 {% endif %}
               {% else %}
                 -
@@ -1767,8 +1938,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Place of birth</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.birthPlace is not empty %}
-                {{ other.value.birthPlace }}
+              {% if thirdParty.value.party.birthPlace is not empty %}
+                {{ thirdParty.value.party.birthPlace }}
               {% else %}
                 -
               {% endif %}
@@ -1777,27 +1948,27 @@
           <div class="data-list__row">
             <dt class="data-list__title">Current address</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.address is not empty %}
-                {% if other.value.address.AddressLine1 is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.AddressLine1 }}</span>
+              {% if thirdParty.value.party.address is not empty %}
+                {% if thirdParty.value.party.address.AddressLine1 is not empty %}
+                  <span class="u-comma-before">{{ thirdParty.value.party.address.AddressLine1 }}</span>
                 {% endif %}
-                {% if other.value.address.AddressLine2 is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.AddressLine2 }}</span>
+                {% if thirdParty.value.party.address.AddressLine2 is not empty %}
+                  <span class="u-comma-before">{{ thirdParty.value.party.address.AddressLine2 }}</span>
                 {% endif %}
-                {% if other.value.address.AddressLine3 is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.AddressLine3 }}</span>
+                {% if thirdParty.value.party.address.AddressLine3 is not empty %}
+                  <span class="u-comma-before">{{ thirdParty.value.party.address.AddressLine3 }}</span>
                 {% endif %}
-                {% if other.value.address.PostTown is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.PostTown }}</span>
+                {% if thirdParty.value.party.address.PostTown is not empty %}
+                  <span class="u-comma-before">{{ thirdParty.value.party.address.PostTown }}</span>
                 {% endif %}
-                {% if other.value.address.PostCode is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.PostCode }}</span>
+                {% if thirdParty.value.party.address.PostCode is not empty %}
+                  <span class="u-comma-before">{{ thirdParty.value.party.address.PostCode }}</span>
                 {% endif %}
-                {% if other.value.address.County is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.County }}</span>
+                {% if thirdParty.value.party.address.County is not empty %}
+                  <span class="u-comma-before">{{ thirdParty.value.party.address.County }}</span>
                 {% endif %}
-                {% if other.value.address.Country is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.Country }}</span>
+                {% if thirdParty.value.party.address.Country is not empty %}
+                  <span class="u-comma-before">{{ thirdParty.value.party.address.Country }}</span>
                 {% endif %}
               {% else %}
                 -
@@ -1807,8 +1978,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Telephone number</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.telephone is not empty %}
-                {{ other.value.telephone }}
+              {% if thirdParty.value.party.telephone is not empty and thirdParty.value.party.telephoneNumber is not empty %}
+                {{ thirdParty.value.party.telephoneNumber }}
               {% else %}
                 -
               {% endif %}
@@ -1817,8 +1988,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Relationship to the child</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.childInformation is not empty %}
-                <span class="u-block">{{ other.value.childInformation }}</span>
+              {% if thirdParty.value.party.childInformation is not empty %}
+                <span class="u-block">{{ thirdParty.value.party.childInformation }}</span>
               {% else %}
                 -
               {% endif %}
@@ -1847,14 +2018,13 @@
           <div class="data-list__row">
             <dt class="data-list__title">Litigation capacity issues</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and
-              other.value.litigationIssues  is not empty %}
-                {% if other.value.litigationIssues == 'YES' %}
+              {% if thirdParty.value.party.litigationIssues  is not empty %}
+                {% if thirdParty.value.party.litigationIssues == 'YES' %}
                   <span class="u-block">Yes</span>
-                  {% if other.value.litigationIssuesDetails is not empty %}
-                    <span class="u-block">{{ other.value.litigationIssuesDetails }}</span>
+                  {% if thirdParty.value.party.litigationIssuesDetails is not empty %}
+                    <span class="u-block">{{ thirdParty.value.party.litigationIssuesDetails }}</span>
                   {% endif %}
-                {% elseif other.value.litigationIssues == 'NO' %}
+                {% elseif thirdParty.value.party.litigationIssues == 'NO' %}
                   <span class="u-block">No</span>
                 {% else %}
                   <span class="u-block">Don't know</span>
@@ -1871,18 +2041,18 @@
           <div class="data-list__row">
             <dt class="data-list__title">Confidential contact details</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.detailsHidden is not empty %}
-                {{ other.value.detailsHidden }}
-              {% if other.value.detailsHiddenReason is not empty %}
-                <span class="u-block">{{ other.value.detailsHiddenReason }}</span>
-              {% endif %}
+              {% if thirdParty.value.party.detailsHidden is not empty %}
+                {{ thirdParty.value.party.detailsHidden }}
+                {% if thirdParty.value.party.detailsHiddenReason is not empty %}
+                  <span class="u-block">{{ thirdParty.value.party.detailsHiddenReason }}</span>
+                {% endif %}
               {% else %}
                 -
               {% endif %}
             </dd>
           </div>
         </dl>
-        {% endif %}
+      {% endif %}
       {% set counter = counter + 1 %}
     {% endfor %}
   {% endif %}
