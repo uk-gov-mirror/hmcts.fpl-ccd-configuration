@@ -30,7 +30,7 @@ Scenario('Different user in the same local authority can see case created', asyn
 Scenario('Different user in a different local authority cannot see case created', async (I) => {
   await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   await I.navigateToCaseDetails(caseId);
-  I.seeInCurrentUrl('error');
+  I.see('No cases found');
   I.signOut();
 });
 

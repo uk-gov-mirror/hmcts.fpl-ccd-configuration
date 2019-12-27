@@ -22,7 +22,7 @@ STATUS=$(curl --silent --output /dev/null --write-out '%{http_code}' -X POST -H 
     "oauth2ClientId": "'${CLIENT_ID}'",
     "oauth2ClientSecret": "'${CLIENT_SECRET}'",
     "oauth2RedirectUris": ["'${REDIRECT_URL}'"],
-    "oauth2Scope": "openid profile authorities acr roles search-user",
+    "oauth2Scope": "openid profile authorities acr roles search-user manage-user create-user",
     "selfRegistrationAllowed": "false"
 }')
 

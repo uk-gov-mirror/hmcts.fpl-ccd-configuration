@@ -8,3 +8,4 @@ ${dir}/utils/idam-create-service.sh "ccd_gateway" "ccd_gateway" "ccd_gateway_sec
 
 ${dir}/utils/idam-create-service.sh "fpl" "fpl" "OOOOOOOOOOOOOOOO" "https://localhost:9000/oauth2/callback"
 
+${dir}/utils/idam-create-service.sh "xuiwebapp" "xuiwebapp" "AAAAAAAAAAAAAAAA" "http://localhost:3000/oauth2/callback"

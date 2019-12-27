@@ -20,7 +20,9 @@ const applicant = require('./fixtures/applicant');
 const solicitor = require('./fixtures/solicitor');
 const respondent = require('./fixtures/respondents');
 
-let baseUrl = process.env.URL || 'http://localhost:3451';
+let baseUrl = process.env.URL || 'http://localhost:3000';
+
+const signOutLocator = ".hmcts-header__content a";
 
 'use strict';
 
@@ -28,26 +30,19 @@ module.exports = function () {
   return actor({
     async signIn(username, password) {
       await this.retryUntilExists(async () => {
-        this.amOnPage(process.env.URL || 'http://localhost:3451');
-        if (await this.waitForSelector('#global-header') == null) {
-          return;
-        }
+        this.amOnPage(baseUrl);
 
-        const user = await this.grabText('#user-name');
-        if (user !== undefined) {
-          if (user.toLowerCase().includes(username)) {
-            return;
-          }
-          this.signOut();
-        }
+        if( await this.waitForSelector(signOutLocator) != null ){
+          await this.signOut();
+        };
 
         loginPage.signIn(username, password);
-      }, '#sign-out');
+      },  signOutLocator);
     },
 
     async logInAndCreateCase(username, password) {
       await this.signIn(username, password);
-      this.click('Create new case');
+      this.click('Create case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
@@ -105,7 +100,8 @@ module.exports = function () {
     },
 
     signOut() {
-      this.click('Sign Out');
+      this.wait(10);
+      this.click('Sign out');
       this.wait(2); // in seconds
     },
 
@@ -116,7 +112,7 @@ module.exports = function () {
       if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
         await this.retryUntilExists(() => {
           this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
-        }, '#sign-out');
+        }, signOutLocator);
       }
     },
 

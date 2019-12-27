@@ -15,7 +15,8 @@ module.exports = {
       await I.completeEvent('Save and continue');
       I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
       caseViewPage.selectTab(caseViewPage.tabs.documents);
-      I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
+      //TODO-TOMEK ticket hidden fields
+      I.seeDocument('Social work chronology', '', 'To follow', '');
       I.seeDocument('Social work statement and genogram', 'mockFile.txt', 'Attached');
       I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
       I.seeDocument('Care plan', 'mockFile.txt', 'Attached');

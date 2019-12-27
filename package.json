@@ -27,5 +27,8 @@
       "pre-commit": "yarn lint"
     }
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "arrify": "^2.0.1"
+  }
 }
