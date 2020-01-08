@@ -17,20 +17,22 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -209,6 +211,30 @@ public class CaseData {
     private final DynamicList nextHearingDateList;
 
     private final List<Element<Representative>> representatives;
+
+    private final List<Element<Placement>> placements;
+
+    @JsonGetter("placements")
+    public List<Element<Placement>> getPlacements() {
+        return placements != null ? placements : new ArrayList<>();
+    }
+
+    @JsonIgnore
+    public void addOrUpdatePlacement(Placement placement) {
+
+        Optional<Element<Placement>> pl = getPlacements().stream().filter(p -> p.getValue().getChildId().equals(placement.getChildId())).findFirst();
+
+        if (pl.isPresent()) {
+            pl.get().getValue().setApplication(placement.getApplication());
+        } else {
+            getPlacements().add(ElementUtils.element(placement));
+        }
+    }
+
+    @JsonIgnore
+    public Optional<Placement> getPlacement(UUID childId) {
+        return getPlacements().stream().filter(p -> p.getValue().getChildId().equals(childId)).map(Element::getValue).findFirst();
+    }
 
     @JsonIgnore
     public List<Other> getAllOthers() {

@@ -668,6 +668,31 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childrenList",
+    "Label": "Which child?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placement",
+    "Label": "Selected child",
+    "FieldType": "Placement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placements",
+    "Label": "Selected child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Placement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseManagementOrder",
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
