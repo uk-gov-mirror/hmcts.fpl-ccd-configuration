@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -35,7 +36,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.GENERAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 
@@ -51,6 +52,7 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
+    private final DocmosisCoverDocumentsService coverDocumentsService;
 
     @Autowired
     public GeneratedOrderController(ObjectMapper mapper,
@@ -59,7 +61,8 @@ public class GeneratedOrderController {
                                     DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                     UploadDocumentService uploadDocumentService,
                                     ApplicationEventPublisher applicationEventPublisher,
-                                    GatewayConfiguration gatewayConfiguration) {
+                                    GatewayConfiguration gatewayConfiguration,
+                                    DocmosisCoverDocumentsService coverDocumentsService) {
         this.mapper = mapper;
         this.service = service;
         this.validateGroupService = validateGroupService;
@@ -67,6 +70,7 @@ public class GeneratedOrderController {
         this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.gatewayConfiguration = gatewayConfiguration;
+        this.coverDocumentsService = coverDocumentsService;
     }
 
     @PostMapping("/about-to-start")
@@ -135,6 +139,8 @@ public class GeneratedOrderController {
 
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
+
+        //pass document into internal event PRINT
     }
 
     private Document getDocument(String authorization,
@@ -143,8 +149,10 @@ public class GeneratedOrderController {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-                service.getOrderTemplateData(caseData), templateType);
+        DocmosisDocument document = coverDocumentsService.createGeneralLetter(caseData.getFamilyManCaseNumber(),
+            caseData.getRepresentatives().get(0).getValue());
+        docmosisDocumentGeneratorService.generateDocmosisDocument(
+            service.getOrderTemplateData(caseData), templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
@@ -165,6 +173,6 @@ public class GeneratedOrderController {
     }
 
     private DocmosisTemplates getDocmosisTemplateType(GeneratedOrderType type) {
-        return type == EMERGENCY_PROTECTION_ORDER ? EPO : ORDER;
+        return type == EMERGENCY_PROTECTION_ORDER ? EPO : GENERAL;
     }
 }
