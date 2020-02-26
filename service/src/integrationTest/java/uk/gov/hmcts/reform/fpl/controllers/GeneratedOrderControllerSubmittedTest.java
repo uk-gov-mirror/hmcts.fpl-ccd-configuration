@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MapDifference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -24,7 +22,6 @@ import java.time.format.FormatStyle;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -41,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -126,39 +122,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
             eq(CASE_ID));
 
-        verifySendDocumentEventTriggered();
-    }
-
-    @Test
-    void submittedShouldNotifyHmctsAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
-
-        Map<String, Object> caseData = getCommonCaseData()
-            .put("representatives", buildRepresentativesServedByPost())
-            .build();
-
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        postSubmittedEvent(caseDetails);
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedOrderLocalAuthorityParameters()),
-            eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            dataCaptor.capture(),
-            eq(CASE_ID));
-
-        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor,
-            IssuedOrderType.GENERATED_ORDER);
-
-        assertThat(difference.areEqual()).isTrue();
-
-        verifyZeroInteractions(notificationClient);
         verifySendDocumentEventTriggered();
     }
 

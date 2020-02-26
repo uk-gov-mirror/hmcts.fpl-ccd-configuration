@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MapDifference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -33,13 +32,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -51,7 +48,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -62,9 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -83,7 +77,6 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
     private final DocumentReference cmoDocument = DocumentReference.buildFromDocument(document());
-
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -170,61 +163,6 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded();
 
         verifyZeroInteractions(notificationClient);
-    }
-
-    @Test
-    void submittedShouldNotifyHmctsAdminWhenRepresentativesServedByPost() throws Exception {
-        List<Element<Representative>> representativeServedByPost = buildRepresentativesServedByPost();
-
-        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
-
-        postSubmittedEvent(caseDetails);
-
-        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
-        verifySentDocumentEventTriggered();
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
-            eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(),
-            eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            dataCaptor.capture(),
-            eq(CASE_ID));
-
-        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor, CMO);
-        assertThat(difference.areEqual()).isTrue();
-
-        verifyZeroInteractions(notificationClient);
-    }
-
-    @Test
-    void submittedShouldNotifyCtscAdminWhenRepresentativesServedByPostAndCtscIsEnabled() throws Exception {
-        List<Element<Representative>> representativeServedByPost = buildRepresentativesServedByPost();
-
-        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
-
-        caseDetails.setData(ImmutableMap.<String, Object>builder()
-            .putAll(caseDetails.getData())
-            .put("sendToCtsc", "Yes")
-            .build());
-
-        postSubmittedEvent(caseDetails);
-
-        verify(notificationClient, never()).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            dataCaptor.capture(),
-            eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            dataCaptor.capture(),
-            eq(CASE_ID));
     }
 
     @Test

@@ -128,7 +128,7 @@ public class NotificationHandler {
         sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             orderEvent.getMostRecentUploadedDocumentUrl());
 
-        sendOrderIssuedNotificationToAdmin(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+        sendOrderIssuedNotificationToAdmin(eventData, GENERATED_ORDER);
     }
 
     @EventListener
@@ -234,8 +234,7 @@ public class NotificationHandler {
 
         sendNotification(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters, eventData.reference);
         sendNotificationToRepresentativesServedThroughDigitalService(eventData, parameters);
-        sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
-            NOTICE_OF_PLACEMENT_ORDER);
+        sendOrderIssuedNotificationToAdmin(eventData, NOTICE_OF_PLACEMENT_ORDER);
     }
 
     //TODO: refactor to common method to send to parties. i.e sendNotificationToRepresentative(NotificationId,
@@ -317,7 +316,7 @@ public class NotificationHandler {
     private void sendCMODocumentLinkNotifications(final EventData eventData, final byte[] documentContents) {
         sendCMODocumentLinkNotificationForCafcass(eventData, documentContents);
         sendCMODocumentLinkNotificationsToRepresentatives(eventData, documentContents);
-        sendOrderIssuedNotificationToAdmin(eventData, documentContents, CMO);
+        sendOrderIssuedNotificationToAdmin(eventData, CMO);
     }
 
     private void sendCMODocumentLinkNotificationForCafcass(final EventData eventData, final byte[] documentContents) {
@@ -373,11 +372,9 @@ public class NotificationHandler {
             Long.toString(caseDetails.getId()));
     }
 
-    private void sendOrderIssuedNotificationToAdmin(final EventData eventData,
-                                                    final byte[] documentContents,
-                                                    final IssuedOrderType issuedOrderType) {
+    private void sendOrderIssuedNotificationToAdmin(final EventData eventData, final IssuedOrderType issuedOrderType) {
         Map<String, Object> parameters = orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-            eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
+            eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), issuedOrderType);
 
         String email = getHmctsAdminEmail(eventData);
 

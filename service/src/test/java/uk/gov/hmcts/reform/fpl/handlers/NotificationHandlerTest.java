@@ -233,7 +233,7 @@ class NotificationHandlerTest {
                 .willReturn(orderLocalAuthorityParameters);
 
             given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER))
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, GENERATED_ORDER))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
         }
 
@@ -314,7 +314,7 @@ class NotificationHandlerTest {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
 
             given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-                callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER))
+                callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, GENERATED_ORDER))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
 
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
@@ -382,7 +382,7 @@ class NotificationHandlerTest {
                 .willReturn(expectedCMOIssuedNotificationParameters);
 
             given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, CMO))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
@@ -413,7 +413,7 @@ class NotificationHandlerTest {
                 .willReturn(expectedCMOIssuedNotificationParameters);
 
             given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-                callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
+                callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, CMO))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
@@ -802,7 +802,7 @@ class NotificationHandlerTest {
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
             given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER))
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, NOTICE_OF_PLACEMENT_ORDER))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
 
             placementNotificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
