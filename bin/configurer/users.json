@@ -1,5 +1,5 @@
 [
-  {"email": "damian@swansea.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "damian@swansea.gov.uk", "roles": "citizen,caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
   {"email": "kurt@swansea.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
   {"email": "james@swansea.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
   {"email": "sam@hillingdon.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
