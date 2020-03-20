@@ -1,5 +1,5 @@
 # fpl-ccd-configuration
-Family public law's implementation of the CCD template
+iFamily public law's implementation of the CCD template
 
 ### Contents:
 - [Prerequisites](#prerequisites)
