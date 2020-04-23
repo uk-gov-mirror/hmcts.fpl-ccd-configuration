@@ -39,7 +39,6 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
-    private static final Long CASE_ID = 12345L;
     private static final byte[] documentContents = {1, 2, 3, 4, 5};
 
     @Test

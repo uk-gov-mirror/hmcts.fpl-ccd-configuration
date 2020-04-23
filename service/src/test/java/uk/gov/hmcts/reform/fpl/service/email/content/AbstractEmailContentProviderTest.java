@@ -9,6 +9,7 @@ abstract class AbstractEmailContentProviderTest {
     static final String CASE_REFERENCE = "12345";
     static final String BASE_URL = "http://fake-url";
     static final String COURT_NAME = "Family Court";
+    static final Long CASE_ID = 12345L;
 
     String buildCaseUrl(String caseId) {
         return formatCaseUrl(BASE_URL, Long.parseLong(caseId));

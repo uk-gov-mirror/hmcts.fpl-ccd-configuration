@@ -22,8 +22,6 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUr
 @TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
-    private static final Long CASE_ID = 12345L;
-
     @Autowired
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 

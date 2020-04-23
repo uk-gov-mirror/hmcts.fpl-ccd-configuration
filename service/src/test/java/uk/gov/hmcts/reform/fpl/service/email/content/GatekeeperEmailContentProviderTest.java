@@ -7,15 +7,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest.BASE_URL;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
@@ -23,15 +23,11 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, GatekeeperEmailContentProvider.class, LookupTestConfig.class
 })
+@TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
-
-    @PostConstruct
-    void setField() {
-        ReflectionTestUtils.setField(gatekeeperEmailContentProvider, "uiBaseUrl", BASE_URL);
-    }
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() {
