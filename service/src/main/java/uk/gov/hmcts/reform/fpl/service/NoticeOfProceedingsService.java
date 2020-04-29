@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -16,35 +17,27 @@ import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
-import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Service
-public class NoticeOfProceedingsService {
-    private DateFormatterService dateFormatterService;
-    private HearingBookingService hearingBookingService;
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private HearingVenueLookUpService hearingVenueLookUpService;
-    private CommonCaseDataExtractionService commonCaseDataExtractionService;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
-    @Autowired
-    public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
-                                      HearingBookingService hearingBookingService,
-                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                      HearingVenueLookUpService hearingVenueLookUpService,
-                                      CommonCaseDataExtractionService commonCaseDataExtractionService) {
-        this.dateFormatterService = dateFormatterService;
-        this.hearingBookingService = hearingBookingService;
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-        this.hearingVenueLookUpService = hearingVenueLookUpService;
-        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
-    }
+@Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class NoticeOfProceedingsService {
+    private final HearingBookingService hearingBookingService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private final Time time;
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
                                                                    List<DocmosisTemplates> templateTypes) {
@@ -71,7 +64,7 @@ public class NoticeOfProceedingsService {
         return ImmutableMap.<String, Object>builder()
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
-            .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("todaysDate", formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .put("applicantName", getFirstApplicantName(caseData.getApplicants()))
             .put("orderTypes", getOrderTypes(caseData.getOrders()))
             .put("childrenNames", getAllChildrenNames(caseData.getAllChildren()))
@@ -80,6 +73,8 @@ public class NoticeOfProceedingsService {
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
                 caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .putAll(hearingBookingData)
+            .put("crest", CREST.getValue())
+            .put("courtseal", COURT_SEAL.getValue())
             .build();
     }
 
@@ -89,7 +84,7 @@ public class NoticeOfProceedingsService {
 
     private Map<String, Object>  getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
         return ImmutableMap.of(
             "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
@@ -130,8 +125,8 @@ public class NoticeOfProceedingsService {
 
         if (childrenNames.contains(",")) {
             StringBuilder stringBuilder = new StringBuilder(childrenNames);
-            stringBuilder.replace(childrenNames.lastIndexOf(","),
-                childrenNames.lastIndexOf(",") + 1, " and");
+            stringBuilder.replace(childrenNames.lastIndexOf(','),
+                childrenNames.lastIndexOf(',') + 1, " and");
 
             childrenNames = stringBuilder.toString();
         }

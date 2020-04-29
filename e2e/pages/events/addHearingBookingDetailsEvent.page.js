@@ -1,5 +1,6 @@
 const { I } = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
   fields: function (index) {
@@ -31,6 +32,7 @@ module.exports = {
           somethingElse: `#hearingDetails_${index}_hearingNeedsBooked-SOMETHING_ELSE`,
         },
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
+        venueCustomAddress: `#hearingDetails_${index}_venueCustomAddress_venueCustomAddress`,
       },
     };
   },
@@ -38,8 +40,16 @@ module.exports = {
   async enterHearingDetails(hearingDetails) {
     const elementIndex = await this.getActiveElementIndex();
 
+    I.waitForElement(this.fields(elementIndex).hearingBooking.type.caseManagement);
     I.click(this.fields(elementIndex).hearingBooking.type);
     I.selectOption(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
+
+    if(hearingDetails.venue === 'Other') {
+      within(this.fields(elementIndex).hearingBooking.venueCustomAddress, () => {
+        postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
+      });
+    }
+
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.second, hearingDetails.startDate.second);
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.minute, hearingDetails.startDate.minute);
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.hour, hearingDetails.startDate.hour);
@@ -56,15 +66,16 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
-    await this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName,
+
+    this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName,
       hearingDetails.judgeAndLegalAdvisor.legalAdvisorName,
       hearingDetails.judgeAndLegalAdvisor.judgeTitle,
-      hearingDetails.judgeAndLegalAdvisor.otherTitle
+      hearingDetails.judgeAndLegalAdvisor.otherTitle,
+      elementIndex
     );
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, title, otherTitle) {
-    const elementIndex = await this.getActiveElementIndex();
+  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, title, otherTitle, elementIndex) {
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
     judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, title, otherTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, complexTypeAppender);

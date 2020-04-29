@@ -341,7 +341,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "gateKeeperLabel",
-    "Label": "Let the gatekeeper know there's a new case",
+    "Label": "### Let the gatekeeper know there's a new case",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeeperHintLabel",
+    "Label": "You must add at least 1 gatekeeper",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -352,6 +360,15 @@
     "Label": "Gatekeeper's email address",
     "FieldType": "Email",
     "HintText": "For example, joe.bloggs@la.gov.uk",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeeperEmails",
+    "Label": "Gatekeeper",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GatekeeperEmail",
     "SecurityClassification": "Public"
   },
   {
@@ -399,7 +416,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judgeAndLegalAdvisor",
-    "Label": "Judge and legal advisor",
+    "Label": "Judge and Justices' Legal Adviser",
     "FieldType": "JudgeAndLegalAdvisor",
     "SecurityClassification": "Public"
   },
@@ -1235,6 +1252,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "expertReport",
+    "Label": "Report",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ExpertReport",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "dateOfIssue_label",
     "Label": "## Date of issue",
     "FieldType": "Label",
@@ -1255,5 +1281,25 @@
     "Label": "A history of payments associated with a the case",
     "FieldType": "CasePaymentHistoryViewer",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseNote",
+    "Label": "Note",
+    "HintText": "Add note detail, including relevant dates and people involved",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "The note field to be displayed in an event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseNotes",
+    "Label": "Note",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CaseNote",
+    "SecurityClassification": "Public",
+    "Comment": "The note fields to be displayed in the tab"
   }
 ]

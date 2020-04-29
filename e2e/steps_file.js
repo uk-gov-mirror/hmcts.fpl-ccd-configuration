@@ -28,31 +28,34 @@ let baseUrl = process.env.URL || 'http://localhost:3451';
 
 module.exports = function () {
   return actor({
-    async signIn(username, password) {
+    async signIn(user) {
       await this.retryUntilExists(async () => {
         this.amOnPage(process.env.URL || 'http://localhost:3451');
         if (await this.waitForSelector('#global-header') == null) {
           return;
         }
 
-        const user = await this.grabText('#user-name');
-        if (user !== undefined) {
-          if (user.toLowerCase().includes(username)) {
+        const userName = await this.grabText('#user-name');
+        if (userName !== undefined) {
+          if (userName.toLowerCase().includes(user.email)) {
             return;
           }
           this.signOut();
         }
 
-        loginPage.signIn(username, password);
+        loginPage.signIn(user);
       }, '#sign-out');
     },
 
-    async logInAndCreateCase(username, password) {
-      await this.signIn(username, password);
+    async logInAndCreateCase(user) {
+      await this.signIn(user);
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
+      let caseId = await this.grabTextFrom('.heading-h1');
+      console.log(`Case created ${caseId}`);
+      return caseId;
     },
 
     async completeEvent(button, changeDetails) {
@@ -91,35 +94,24 @@ module.exports = function () {
       }
     },
 
-    seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
-      const complexType = locate(`.//span[text() = "${complexTypeHeading}"]`);
-      const questionRow = locate(`${complexType}/../../../table/tbody/tr[${questionNo}]`);
-      this.seeElement(locate(`${questionRow}/th/span`).withText(question));
-      if (Array.isArray(answer)) {
-        let ansIndex = 1;
-        answer.forEach(ans => {
-          this.seeElement(locate(`${questionRow}/td/span//tr[${ansIndex}]`).withText(ans));
-          ansIndex++;
+    seeInTab(pathToField, fieldValue) {
+      let path = [].concat(pathToField);
+      let fieldName = path.splice(-1, 1)[0];
+      let selector = '//div[@class="tabs-panel"]';
+
+      path.forEach(step => {
+        selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+      }, this);
+
+      let fieldSelector = `${selector}//*[@class="complex-panel-simple-field" and .//th/span[text()="${fieldName}"]]`;
+
+      if (Array.isArray(fieldValue)) {
+        fieldValue.forEach((value, index) => {
+          this.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
         });
       } else {
-        this.seeElement(locate(`${questionRow}/td/span`).withText(answer));
+        this.seeElement(locate(fieldSelector).withText(fieldValue));
       }
-    },
-
-    seeNestedAnswerInTab(questionNo, complexTypeHeading, complexTypeSubHeading, question, answer) {
-      const panelLocator = name => locate(`//div[@class="complex-panel"][//span[text()="${name}"]]`);
-
-      const topLevelLocator = panelLocator(complexTypeHeading);
-      const subLevelLocator = panelLocator(complexTypeSubHeading);
-      const rowLocator = locate(`${topLevelLocator}${subLevelLocator}/table/tbody/tr[${questionNo}]`);
-      const questionLocator = locate(`${rowLocator}/th/span`);
-      const answerLocator = locate(`${rowLocator}/td/span`);
-
-      this.seeElement(topLevelLocator);
-      this.seeElement(subLevelLocator);
-      this.seeElement(rowLocator);
-      this.seeElement(questionLocator.withText(question));
-      this.seeElement(answerLocator.withText(answer));
     },
 
     seeCaseInSearchResult(caseId) {
@@ -132,7 +124,7 @@ module.exports = function () {
 
     signOut() {
       this.click('Sign Out');
-      this.wait(2); // in seconds
+      this.waitForText('Sign in', 20);
     },
 
     async navigateToCaseDetails(caseId) {
@@ -144,6 +136,11 @@ module.exports = function () {
           this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
         }, '#sign-out');
       }
+    },
+
+    async navigateToCaseDetailsAs(user, caseId) {
+      await this.signIn(user);
+      await this.navigateToCaseDetails(caseId);
     },
 
     async navigateToCaseList(){
@@ -194,6 +191,20 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
     },
 
+    async fillDate(date, sectionId = 'form') {
+      if (date instanceof Date) {
+        date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear()};
+      }
+
+      if (date) {
+        return within(sectionId, () => {
+          this.fillField('Day', date.day);
+          this.fillField('Month', date.month);
+          this.fillField('Year', date.year);
+        });
+      }
+    },
+
     async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
       if(collectionName) {
@@ -232,9 +243,7 @@ module.exports = function () {
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
-    async retryUntilExists(action, locator) {
-      const maxNumberOfTries = 4;
-
+    async retryUntilExists(action, locator, maxNumberOfTries = 6) {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
         if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {

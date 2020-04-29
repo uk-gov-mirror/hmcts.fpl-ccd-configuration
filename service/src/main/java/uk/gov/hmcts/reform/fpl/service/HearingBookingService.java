@@ -1,27 +1,30 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.time.LocalDateTime.now;
 import static java.util.Comparator.comparing;
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBookingService {
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
+
+    private final Time time;
 
     public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
         return ofNullable(caseData.getHearingDetails())
@@ -32,46 +35,16 @@ public class HearingBookingService {
         return hearingDetails.stream().filter(this::isPastHearing).collect(toList());
     }
 
-    private boolean isPastHearing(Element<HearingBooking> element) {
-        return ofNullable(element.getValue())
-            .map(HearingBooking::getStartDate)
-            .filter(hearingDate -> hearingDate.isBefore(now()))
-            .isPresent();
-    }
-
-    // TODO: this method will always get the first (by date, even if in past) hearing booking. Not the most urgent
-    // FPLA-1484
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
-        if (hearingDetails == null) {
-            throw new IllegalStateException("Hearing booking was not present");
-        }
-
-        return hearingDetails.stream()
-            .map(Element::getValue)
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearing -> hearing.getStartDate().isAfter(time.now()))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
 
     public Optional<HearingBooking> getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
-        if (isEmpty(hearingDetails)) {
-            return empty();
-        }
-
-        return hearingDetails.stream()
-            .map(Element::getValue)
+        return unwrapElements(hearingDetails).stream()
             .min(comparing(HearingBooking::getStartDate));
-    }
-
-    public HearingBooking getHearingBooking(List<Element<HearingBooking>> hearingDetails, DynamicList hearingDateList) {
-        if (hearingDetails == null || hearingDateList == null || hearingDateList.getValue() == null) {
-            return HearingBooking.builder().build();
-        }
-
-        return hearingDetails.stream()
-            .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
-            .findFirst()
-            .map(Element::getValue)
-            .orElse(HearingBooking.builder().build());
     }
 
     public HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingDetails, UUID elementId) {
@@ -99,5 +72,12 @@ public class HearingBookingService {
         combinedHearingDetails.sort(comparing(element -> element.getValue().getStartDate()));
 
         return combinedHearingDetails;
+    }
+
+    private boolean isPastHearing(Element<HearingBooking> element) {
+        return ofNullable(element.getValue())
+            .map(HearingBooking::getStartDate)
+            .filter(hearingDate -> hearingDate.isBefore(time.now()))
+            .isPresent();
     }
 }

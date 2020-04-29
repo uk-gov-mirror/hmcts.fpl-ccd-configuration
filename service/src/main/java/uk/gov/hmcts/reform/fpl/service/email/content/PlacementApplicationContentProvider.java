@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import java.util.Map;
 
@@ -17,15 +16,11 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 @Service
 public class PlacementApplicationContentProvider extends AbstractEmailContentProvider {
-    private final ObjectMapper mapper;
 
     @Autowired
-    public PlacementApplicationContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                              ObjectMapper mapper,
-                                              HearingBookingService hearingBookingService,
-                                              DateFormatterService dateFormatterService) {
-        super(uiBaseUrl, dateFormatterService, hearingBookingService);
-        this.mapper = mapper;
+    protected PlacementApplicationContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                                  ObjectMapper mapper) {
+        super(uiBaseUrl, mapper);
     }
 
     public Map<String, Object> buildPlacementApplicationNotificationParameters(CaseDetails caseDetails) {

@@ -14,6 +14,8 @@ module.exports = {
     confidential: 'Confidential',
     placement: 'Placement',
     paymentHistory: 'Payment History',
+    notes: 'Notes',
+    expertReports: 'Expert Reports',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',

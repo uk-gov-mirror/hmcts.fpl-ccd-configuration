@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -20,8 +19,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,46 +38,37 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, DateFormatterService.class, CommonDirectionService.class, DraftCMOService.class
+    JacksonAutoConfiguration.class, CommonDirectionService.class, DraftCMOService.class, FixedTimeConfiguration.class
 })
 class DraftCMOServiceTest {
-    private static final LocalDateTime NOW = LocalDateTime.now();
 
-    private final ObjectMapper mapper;
-    private final DateFormatterService dateFormatterService;
-    private final DraftCMOService draftCMOService;
+    @Autowired
+    private ObjectMapper mapper;
+    @Autowired
+    private DraftCMOService draftCMOService;
+    @Autowired
+    private Time time;
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
 
-    @MockBean
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    DraftCMOServiceTest(ObjectMapper mapper,
-                        DateFormatterService dateFormatterService,
-                        DraftCMOService draftCMOService) {
-        this.mapper = mapper;
-        this.dateFormatterService = dateFormatterService;
-        this.draftCMOService = draftCMOService;
-    }
-
     @BeforeEach
     void setUp() {
-        hearingDetails = createHearingBookings(NOW);
+        hearingDetails = createHearingBookingsFromInitialDate(time.now());
     }
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
-        hearingDetails = createHearingBookings(NOW.plusDays(5));
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
@@ -100,10 +91,10 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldNotReturnHearingDatesWhenHearingDateIsInThePast() {
-        hearingDetails = createHearingBookings(NOW.minusDays(10));
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(10));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
@@ -113,10 +104,10 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDatesWhenHearingDateIsSameDayButLaterTime() {
-        hearingDetails = createHearingBookings(NOW.plusMinutes(5));
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusMinutes(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
@@ -139,10 +130,10 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
-        hearingDetails = createHearingBookings(NOW);
+        hearingDetails = createHearingBookingsFromInitialDate(time.now());
         caseManagementOrder = createCaseManagementOrder();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = mapper.convertValue(data.get(HEARING_DATE_LIST.getKey()), DynamicList.class);
@@ -180,9 +171,9 @@ class DraftCMOServiceTest {
     void shouldReturnAMapWithAllIndividualCMOEntriesPopulated() {
         caseManagementOrder = createCaseManagementOrder();
 
-        hearingDetails = createHearingBookings(NOW);
+        hearingDetails = createHearingBookingsFromInitialDate(time.now());
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         assertThat(data).containsKeys(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
@@ -190,7 +181,7 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnAMapWithEmptyRepopulatedEntriesWhenCaseManagementOrderIsNull() {
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             null, List.of());
 
         DynamicList emptyDynamicList = DynamicList.builder()
@@ -232,7 +223,8 @@ class DraftCMOServiceTest {
     }
 
     private DynamicList getDynamicList() {
-        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(NOW));
+        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(
+            createHearingBookingsFromInitialDate(time.now()));
 
         DynamicListElement listElement = DynamicListElement.builder()
             .label(formatLocalDateToMediumStyle(5))
@@ -257,7 +249,7 @@ class DraftCMOServiceTest {
     }
 
     private String formatLocalDateToMediumStyle(int i) {
-        return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+        return formatLocalDateToString(time.now().plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
 
     @Nested

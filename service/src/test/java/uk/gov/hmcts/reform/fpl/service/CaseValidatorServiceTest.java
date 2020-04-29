@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -26,20 +29,28 @@ import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.validation.Validation;
 
-import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {FixedTimeConfiguration.class})
 class CaseValidatorServiceTest {
+    @Autowired
+    private Time time;
+
+    private CaseData.CaseDataBuilder partialCaseData;
+
     private static CaseValidatorService caseValidatorService;
 
     @BeforeAll()
@@ -47,6 +58,11 @@ class CaseValidatorServiceTest {
         caseValidatorService = new CaseValidatorService(Validation
             .buildDefaultValidatorFactory()
             .getValidator());
+    }
+
+    @BeforeEach
+    void setUp() {
+        partialCaseData = partiallyCompleteCaseData(time.now().toLocalDate());
     }
 
     @Test
@@ -90,6 +106,7 @@ class CaseValidatorServiceTest {
             "• Enter the applicant's full name",
             "• Enter the contact's full name",
             "• Enter a job title for the contact",
+            "• Enter a PBA number for the contact",
             "• Enter a valid address for the contact",
             "• Enter at least one telephone number for the contact",
             "• Enter an email address for the contact",
@@ -97,13 +114,16 @@ class CaseValidatorServiceTest {
             "• Enter the solicitor's email",
             "In the children section:",
             "• Tell us the names of all children in the case",
+            "• Tell us the gender of all children in the case",
+            "• Tell us the date of birth of all children in the case",
             "• Date of birth is in the future. You cannot send this application until that date",
             "In the documents section:",
             "• Tell us the status of all documents including those that you haven't uploaded",
             "In the hearing needed section:",
             "• Select an option for when you need a hearing",
             "In the respondents section:",
-            "• You need to add details to respondents",
+            "• Enter the respondent's full name",
+            "• Enter the respondent's relationship to child",
             "In the allocation proposal section:",
             "• You need to add details to allocation proposal",
             "In the grounds for the application section:",
@@ -113,7 +133,7 @@ class CaseValidatorServiceTest {
 
     @Test
     void shouldReturnAnErrorWhenApplicantIsPopulatedButAddressIsPartiallyCompleted() {
-        CaseData caseData = partiallyCompleteCaseData()
+        CaseData caseData = partialCaseData
             .applicants(applicants(false))
             .build();
 
@@ -126,7 +146,7 @@ class CaseValidatorServiceTest {
 
     @Test
     void shouldNotReturnErrorsWhenMandatoryFieldsHaveBeenCompletedNotIncludingEPO() {
-        CaseData caseData = partiallyCompleteCaseData()
+        CaseData caseData = partialCaseData
             .applicants(applicants(true))
             .solicitor(solicitor())
             .grounds(grounds())
@@ -139,7 +159,7 @@ class CaseValidatorServiceTest {
 
     @Test
     void shouldNotReturnErrorsWhenMandatoryFieldsHaveBeenCompleted() {
-        CaseData caseData = partiallyCompleteCaseData()
+        CaseData caseData = partialCaseData
             .applicants(applicants(true))
             .grounds(grounds())
             .solicitor(solicitor())
@@ -193,24 +213,10 @@ class CaseValidatorServiceTest {
         assertThat(errors).isEmpty();
     }
 
-    @Test
-    void shouldNotReturnAnErrorWhenFirstRespondentHasFullNameButNotSecondRespondent() {
-        CaseData caseData = partiallyCompleteCaseData()
-            .grounds(grounds())
-            .applicants(applicants(true))
-            .solicitor(solicitor())
-            .respondents1(respondents())
-            .allocationProposal(allocationProposal())
-            .build();
-
-        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
-        assertThat(errors).isEmpty();
-    }
-
     @ParameterizedTest
     @MethodSource("invalidEmailAddresses")
     void shouldReturnAnErrorWhenApplicantPartyEmailAddressIsInvalid(final String email) {
-        CaseData caseData = partiallyCompleteCaseData()
+        CaseData caseData = partialCaseData
             .applicants(applicantWithInvalidEmailAddress(email))
             .build();
 
@@ -224,7 +230,7 @@ class CaseValidatorServiceTest {
     @ParameterizedTest
     @MethodSource("invalidEmailAddresses")
     void shouldReturnAnErrorWhenRespondentPartyEmailAddressIsInvalid(final String email) {
-        CaseData caseData = partiallyCompleteCaseData()
+        CaseData caseData = partialCaseData
             .respondents1(respondentWithInvalidEmailAddress(email))
             .grounds(grounds())
             .applicants(applicants(true))
@@ -242,7 +248,7 @@ class CaseValidatorServiceTest {
     @ParameterizedTest
     @MethodSource("invalidEmailAddresses")
     void shouldReturnAnErrorWhenApplicantSolicitorEmailAddressIsInvalid(final String email) {
-        CaseData caseData = partiallyCompleteCaseData()
+        CaseData caseData = partialCaseData
             .respondents1(respondents())
             .grounds(grounds())
             .applicants(applicants(true))
@@ -260,25 +266,34 @@ class CaseValidatorServiceTest {
     private CaseData emptyMandatoryCaseData() {
         return CaseData.builder()
             .caseName("Test case")
-            .children1(wrapElements(Child.builder()
-                .party(ChildParty.builder()
-                    .dateOfBirth(now().plusDays(10))
-                    .build())
-                .build()))
+            .children1(wrapElements(
+                Child.builder()
+                    .party(ChildParty.builder()
+                        .dateOfBirth(time.now().toLocalDate().plusDays(10))
+                        .build())
+                    .build(),
+                Child.builder()
+                    .party(ChildParty.builder()
+                        .build())
+                    .build()))
             .hearing(Hearing.builder().build())
             .applicants(wrapElements(Applicant.builder()
                 .party(ApplicantParty.builder().build())
+                .build()))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .build())
                 .build()))
             .solicitor(Solicitor.builder().build())
             .build();
     }
 
-    private CaseData.CaseDataBuilder partiallyCompleteCaseData() {
+    private CaseData.CaseDataBuilder partiallyCompleteCaseData(LocalDate dateOfBirth) {
         return caseDocuments()
             .caseName("Test case")
             .hearing(hearing())
             .respondents1(createRespondents())
-            .children1(createPopulatedChildren())
+            .children1(createPopulatedChildren(dateOfBirth))
             .orders(orders());
     }
 
@@ -313,6 +328,7 @@ class CaseValidatorServiceTest {
                 RespondentParty.builder()
                     .firstName("Timothy")
                     .lastName("Jones")
+                    .relationshipToChild("Uncle")
                     .build())
                 .build(),
             Respondent.builder().party(
@@ -346,6 +362,7 @@ class CaseValidatorServiceTest {
             .party(ApplicantParty.builder()
                 .organisationName("Harry Kane")
                 .jobTitle("Judge")
+                .pbaNumber("1234567")
                 .address(addressBuilder.build())
                 .email(EmailAddress.builder()
                     .email("Harrykane@hMCTS.net")

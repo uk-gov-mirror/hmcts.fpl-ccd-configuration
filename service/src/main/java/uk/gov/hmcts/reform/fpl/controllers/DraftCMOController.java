@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -18,7 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
@@ -44,7 +43,7 @@ public class DraftCMOController {
     private final DraftCMOService draftCMOService;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
-    private final CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService;
+    private final CaseManagementOrderGenerationService docmosisTemplateDataGenerationService;
     private final RespondentService respondentService;
     private final OthersService othersService;
     private final CoreCaseDataService coreCaseDataService;
@@ -56,7 +55,7 @@ public class DraftCMOController {
 
         draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
-        caseDetails.getData().putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
+        caseDetails.getData().putAll(draftCMOService.extractCaseManagementOrderVariables(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
@@ -68,18 +67,13 @@ public class DraftCMOController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestHeader("authorization") String authorization,
-                                                               @RequestHeader("user-id") String userId,
-                                                               @RequestBody CallbackRequest callbackRequest)
-        throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData, true);
-
-        Document document = getDocument(authorization, userId, cmoTemplateData);
+        Document document = getDocument(docmosisTemplateDataGenerationService.getTemplateData(caseData));
 
         final DocumentReference reference = DocumentReference.builder()
             .url(document.links.self.href)
@@ -141,10 +135,9 @@ public class DraftCMOController {
         return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
     }
 
-    private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
+    private Document getDocument(DocmosisData templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
 
-        return uploadDocumentService.uploadPDF(
-            userId, authorization, document.getBytes(), "draft-" + document.getDocumentTitle());
+        return uploadDocumentService.uploadPDF(document.getBytes(), "draft-" + document.getDocumentTitle());
     }
 }

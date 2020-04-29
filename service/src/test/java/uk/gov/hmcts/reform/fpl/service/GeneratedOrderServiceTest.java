@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -62,19 +61,19 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    FixedTimeConfiguration.class, LookupTestConfig.class, DateFormatterService.class, GeneratedOrderService.class
+    FixedTimeConfiguration.class, LookupTestConfig.class, GeneratedOrderService.class
 })
 class GeneratedOrderServiceTest {
     @Autowired
     private Time time;
-
-    @Autowired
-    private DateFormatterService dateFormatterService;
 
     @Autowired
     private GeneratedOrderService service;
@@ -227,8 +226,8 @@ class GeneratedOrderServiceTest {
                 .build())
             .getValue();
 
-        assertThat(builtOrder.getExpiryDate()).isEqualTo(dateFormatterService.formatLocalDateToString(
-            time.now().toLocalDate(), "'11:59pm', d MMMM y"));
+        assertThat(builtOrder.getExpiryDate())
+            .isEqualTo(formatLocalDateToString(time.now().toLocalDate(), "'11:59pm', d MMMM y"));
     }
 
     @Test
@@ -245,8 +244,7 @@ class GeneratedOrderServiceTest {
                 .build(), time.now().toLocalDate(), 5, null).getValue();
 
         final LocalDateTime orderExpiration = time.now().plusMonths(5);
-        final String expectedExpiryDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
-            "h:mma, d MMMM y");
+        final String expectedExpiryDate = formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y");
 
         assertThat(builtOrder.getType()).isEqualTo("Final supervision order");
         assertThat(builtOrder.getExpiryDate()).isEqualTo(expectedExpiryDate);
@@ -278,29 +276,31 @@ class GeneratedOrderServiceTest {
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) throws IOException {
+                                                           GeneratedOrderSubtype subtype) {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED,
+            caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsKey("courtseal");
+        assertThat(templateData).containsEntry("courtseal", "[userImage:familycourtseal.png]");
     }
 
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseDataInDraft(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) throws IOException {
+                                                                  GeneratedOrderSubtype subtype) {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT,
+            caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsKey("draftbackground");
+        assertThat(templateData).containsEntry("draftbackground", "[userImage:draft-watermark.png]");
     }
 
     @Test
@@ -360,7 +360,9 @@ class GeneratedOrderServiceTest {
                                                            LocalDateTime dateTime) {
         ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
         final LocalDate date = dateTime.toLocalDate();
-        String formattedDate = dateFormatterService.formatLocalDateToString(date, FormatStyle.LONG);
+        final String localAuthorityName = "Example Local Authority";
+
+        String formattedDate = formatLocalDateToString(date, FormatStyle.LONG);
 
         List<Map<String, String>> children = ImmutableList.of(
             ImmutableMap.of(
@@ -371,6 +373,7 @@ class GeneratedOrderServiceTest {
                 "name", "Robbie Jones",
                 "gender", "Boy",
                 "dateOfBirth", formattedDate));
+        int childrenCount = children.size();
 
         switch (type) {
             case BLANK_ORDER:
@@ -382,7 +385,8 @@ class GeneratedOrderServiceTest {
                 break;
             case CARE_ORDER:
                 expectedMap
-                    .put("orderType", CARE_ORDER);
+                    .put("orderType", CARE_ORDER)
+                    .put("localAuthorityName", localAuthorityName);
                 if (subtype == INTERIM) {
                     expectedMap
                         .put("orderTitle", "Interim care order")
@@ -408,8 +412,8 @@ class GeneratedOrderServiceTest {
                 expectedMap
                     .put("orderType", SUPERVISION_ORDER);
                 if (subtype == INTERIM) {
-                    String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
-                    String detailsDate = dateFormatterService.formatLocalDateToString(
+                    String dayOrdinalSuffix = getDayOfMonthSuffix(date.getDayOfMonth());
+                    String detailsDate = formatLocalDateToString(
                         date, "d'" + dayOrdinalSuffix + "' MMMM y");
 
                     expectedMap
@@ -419,9 +423,8 @@ class GeneratedOrderServiceTest {
                             + " the child until 11:59pm on the %s.", detailsDate));
                 } else if (subtype == FINAL) {
                     LocalDateTime expiryDate = dateTime.plusMonths(5);
-                    final String suffix = dateFormatterService.getDayOfMonthSuffix(expiryDate.getDayOfMonth());
-                    final String formattedDateTime =
-                        dateFormatterService.formatLocalDateTimeBaseUsingFormat(expiryDate,
+                    final String suffix = getDayOfMonthSuffix(expiryDate.getDayOfMonth());
+                    final String formattedDateTime = formatLocalDateTimeBaseUsingFormat(expiryDate,
                             "h:mma 'on the' d'" + suffix + "' MMMM y");
                     expectedMap
                         .put("orderTitle", "Supervision order")
@@ -435,16 +438,14 @@ class GeneratedOrderServiceTest {
             case EMERGENCY_PROTECTION_ORDER:
                 expectedMap
                     .put("orderType", EMERGENCY_PROTECTION_ORDER)
-                    .put("localAuthorityName", "Example Local Authority")
+                    .put("localAuthorityName", localAuthorityName)
                     .put("childrenDescription", "Test description")
                     .put("epoType", REMOVE_TO_ACCOMMODATION)
                     .put("includePhrase", "Yes")
                     .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
-                    .put("childrenCount", 2)
-                    .put("epoStartDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
-                        "d MMMM yyyy 'at' h:mma"))
-                    .put("epoEndDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
-                        "d MMMM yyyy 'at' h:mma"));
+                    .put("childrenCount", childrenCount)
+                    .put("epoStartDateTime", formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
+                    .put("epoEndDateTime", formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"));
                 break;
             default:
         }
@@ -453,11 +454,11 @@ class GeneratedOrderServiceTest {
             .put("furtherDirections", (type != BLANK_ORDER) ? "Example Directions" : "")
             .put("familyManCaseNumber", "123")
             .put("courtName", "Family Court")
-            .put("dateOfIssue", DateFormatterService.formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
+            .put("dateOfIssue", formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
-            .put("children", children);
-
+            .put("children", children)
+            .put("crest", "[userImage:crest.png]");
         return expectedMap.build();
     }
 

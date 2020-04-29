@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
@@ -18,24 +18,33 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Service
 public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final ObjectMapper objectMapper;
+    private final EmailNotificationHelper emailNotificationHelper;
 
     @Autowired
-    protected C2UploadedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                             ObjectMapper objectMapper,
-                                             DateFormatterService dateFormatterService,
-                                             HearingBookingService hearingBookingService) {
-        super(uiBaseUrl,dateFormatterService,hearingBookingService);
-        this.objectMapper = objectMapper;
+    protected C2UploadedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl, ObjectMapper mapper,
+                                                EmailNotificationHelper emailNotificationHelper) {
+        super(uiBaseUrl, mapper);
+        this.emailNotificationHelper = emailNotificationHelper;
     }
 
     public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String subjectLine = EmailNotificationHelper.buildSubjectLine(caseData);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        final String subjectLine = emailNotificationHelper.buildSubjectLine(caseData);
+
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters(caseDetails))
+            .put("subjectLine", subjectLine)
+            .put("hearingDetailsCallout", subjectLine)
+            .put("reference", String.valueOf(caseDetails.getId()))
+            .build();
+    }
+
+    public Map<String, Object> buildC2UploadPbaPaymentNotTakenNotification(final CaseDetails caseDetails) {
+        return buildCommonNotificationParameters(caseDetails);
+    }
+
+    private Map<String, Object> buildCommonNotificationParameters(final CaseDetails caseDetails) {
         return Map.of(
-            "subjectLine", subjectLine,
-            "hearingDetailsCallout", subjectLine,
-            "reference", String.valueOf(caseDetails.getId()),
             "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId()
         );
     }

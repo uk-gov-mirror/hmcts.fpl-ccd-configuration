@@ -138,6 +138,7 @@ class CommonDirectionServiceTest {
             .directionText("direction text")
             .readOnly("No")
             .directionRemovable("No")
+            .directionNeeded("Yes")
             .dateToBeCompletedBy(today)
             .assignee(LOCAL_AUTHORITY)
             .build());
@@ -154,11 +155,14 @@ class CommonDirectionServiceTest {
             .directionText("direction text")
             .readOnly("No")
             .directionRemovable("No")
+            .directionNeeded("Yes")
             .dateToBeCompletedBy(null)
             .assignee(LOCAL_AUTHORITY)
             .build());
     }
 
+    //TODO FPLA-1481 will probably remove that test, but now it counts even if the directions as
+    // marked as not needed due to CMO issue
     @Test
     void numberDirections_shouldApplyCorrectNumberingWhenDirectionsAreMarkedAsNotNeeded() {
         List<Element<Direction>> directions = directionsMarkedAsRemoved();
@@ -167,7 +171,8 @@ class CommonDirectionServiceTest {
             .map(direction -> direction.getValue().getDirectionType())
             .collect(toList());
 
-        List<String> expectedDirectionTypes = asList("2. direction", "3. direction", "4. direction");
+        List<String> expectedDirectionTypes = asList("2. direction", "3. direction", "4. direction", "5. direction",
+            "6. direction", "7. direction");
 
         assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionTypes);
     }
@@ -489,7 +494,7 @@ class CommonDirectionServiceTest {
             buildDirections(LOCAL_AUTHORITY, "No"),
             buildDirections(PARENTS_AND_RESPONDENTS, "No"),
             buildDirections(CAFCASS, "Yes"),
-            buildDirections(OTHERS, "No"),
+            buildDirections(OTHERS, (String) null), //TO replicate CMO behaviour
             buildDirections(COURT, "Yes"))
             .flatMap(Collection::stream)
             .collect(toList());

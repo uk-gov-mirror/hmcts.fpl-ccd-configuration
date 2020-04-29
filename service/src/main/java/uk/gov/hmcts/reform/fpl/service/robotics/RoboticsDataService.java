@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Child;
 import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,17 +44,16 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGender;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsDataService {
-    private final DateFormatterService dateFormatterService;
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final RoboticsDataValidatorService validatorService;
 
     public RoboticsData prepareRoboticsData(final CaseData caseData, final Long caseId) {
-        final RoboticsData roboticsData = RoboticsData.builder()
+        return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
             .feePaid(2055.00)
@@ -68,19 +66,11 @@ public class RoboticsDataService {
                 && isNotBlank(caseData.getAllocationProposal().getProposal())
                 ? caseData.getAllocationProposal().getProposal() :  null)
             .issueDate(isNotEmpty(caseData.getDateSubmitted())
-                ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted(), "dd-MM-yyyy") : "")
+                ? formatLocalDateToString(caseData.getDateSubmitted(), "dd-MM-yyyy") : "")
             .applicant(populateApplicant(caseData.getAllApplicants()))
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
             .caseId(caseId)
             .build();
-
-        List<String> validationErrors = validatorService.validate(roboticsData);
-        if (isNotEmpty(validationErrors)) {
-            throw new RoboticsDataException(String.format("failed validation with these error(s) %s",
-                validationErrors));
-        }
-
-        return roboticsData;
     }
 
     public String convertRoboticsDataToJson(final RoboticsData roboticsData) {
@@ -209,7 +199,7 @@ public class RoboticsDataService {
     }
 
     private String formatDob(final LocalDate date) {
-        return isEmpty(date) ? "" : dateFormatterService.formatLocalDateToString(date, "d-MMM-y").toUpperCase();
+        return isEmpty(date) ? "" : formatLocalDateToString(date, "d-MMM-y").toUpperCase();
     }
 
     private String deriveApplicationType(final Orders orders) {

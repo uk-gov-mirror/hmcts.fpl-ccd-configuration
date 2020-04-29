@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.Status;
-import uk.gov.hmcts.reform.rd.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class OrganisationService {
     private final AuthTokenGenerator authTokenGenerator;
     private final RequestData requestData;
 
-    public List<String> findUserIdsInSameOrganisation(String authorisation, String localAuthorityCode) {
+    public List<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
 
         try {
             return ImmutableList
@@ -40,7 +40,7 @@ public class OrganisationService {
             try {
                 return
                     ImmutableList
-                        .copyOf(getUsersFromSameOrganisationBasedOnReferenceData(authorisation));
+                        .copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
             } catch (Exception e) {
                 throw new UserOrganisationLookupException(
                     format("Can't find users for %s local authority", localAuthorityCode), e
@@ -58,7 +58,7 @@ public class OrganisationService {
             .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
             .getUsers()
             .stream()
-            .map(User::getUserIdentifier)
+            .map(OrganisationUser::getUserIdentifier)
             .collect(toList());
     }
 
