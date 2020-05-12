@@ -10,7 +10,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Judge {
     private final JudgeOrMagistrateTitle judgeTitle;
@@ -18,6 +18,7 @@ public class Judge {
     private final String judgeLastName;
     private final String judgeFullName;
     private final String judgeEmailAddress;
+    private String allocatedJudgeLabel;
 
     @JsonIgnore
     public String getJudgeOrMagistrateTitle() {
