@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadDraftCMO",
+    "ListElementCode": "orderDoc",
+    "FieldType": "Document",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadDraftCMO",
+    "ListElementCode": "status",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CMOStatus",
+    "ElementLabel": "Is this ready to be sent to the judge?",
+    "SecurityClassification": "Public"
+  }
+]

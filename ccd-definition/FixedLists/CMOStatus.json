@@ -12,12 +12,5 @@
     "ListElementCode": "PARTIES_REVIEW",
     "ListElement": "No, parties need to review it",
     "DisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CMOStatus",
-    "ListElementCode": "SELF_REVIEW",
-    "ListElement": "No, I need to make changes",
-    "DisplayOrder": 3
   }
 ]

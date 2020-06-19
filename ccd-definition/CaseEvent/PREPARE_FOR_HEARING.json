@@ -30,6 +30,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadDraftCMO",
+    "Name": "Upload draft CMO",
+    "Description": "Upload a draft Case Management Order",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "PREPARE_FOR_HEARING",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewFinalCMO",
+    "Name": "Review draft CMO",
+    "Description": "Review final draft of a CMO",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "PREPARE_FOR_HEARING",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "actionCMO",
     "Name": "Action CMO",
     "Description": "Allows Judge user access to action a case management order",

@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewFinalCMO",
+    "ListElementCode": "status",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CMOActionType",
+    "ElementLabel": "Is this ready to be issued?",
+    "SecurityClassification": "Public"
+  }
+]

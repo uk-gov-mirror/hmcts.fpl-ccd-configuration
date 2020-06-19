@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCMO",
+    "CaseEventID": "reviewFinalCMO",
+    "CaseFieldID": "uploadDraftCMO",
+    "ListElementCode": "orderDoc",
+    "EventElementLabel": "Check the draft CMO",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCMO",
+    "CaseEventID": "reviewFinalCMO",
+    "CaseFieldID": "uploadDraftCMO",
+    "ListElementCode": "status",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  }
+]
