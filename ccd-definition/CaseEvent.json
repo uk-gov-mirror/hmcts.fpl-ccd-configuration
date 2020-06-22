@@ -80,5 +80,18 @@
     "PostConditionState": "1_Initiation",
     "SecurityClassification": "Public",
     "ShowEventNotes": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "openCase",
+    "Name": "Start application",
+    "Description": "Create a new case – add a title",
+    "DisplayOrder": 1,
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
   }
 ]

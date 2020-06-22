@@ -14,5 +14,14 @@
   {"LiveFrom": "01/01/2017", "CaseTypeID": "Shared_Storage_DRAFTType", "ID": "bundleTitle", "Label": "Bundle title", "FieldType": "Text", "SecurityClassification": "Public"},
   {"LiveFrom": "01/01/2017", "CaseTypeID": "Shared_Storage_DRAFTType", "ID": "uploadedBundle", "Label": "Bundle document", "FieldType": "Document", "SecurityClassification": "Public"},
   {"LiveFrom": "01/01/2017", "CaseTypeID": "Shared_Storage_DRAFTType", "ID": "shortBundleDescription", "Label": "Short description of bundle", "FieldType": "Text", "SecurityClassification": "Public"},
-  {"LiveFrom": "01/01/2017", "CaseTypeID": "Shared_Storage_DRAFTType", "ID": "uploadedAnnex", "Label": "Annex document", "HintText": "Annex documentation", "FieldType": "Collection", "FieldTypeParameter": "AnnexType", "SecurityClassification": "Public"}
+  {"LiveFrom": "01/01/2017", "CaseTypeID": "Shared_Storage_DRAFTType", "ID": "uploadedAnnex", "Label": "Annex document", "HintText": "Annex documentation", "FieldType": "Collection", "FieldTypeParameter": "AnnexType", "SecurityClassification": "Public"},
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseName",
+    "Label": "Case name",
+    "HintText": "Include the Local Authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  }
 ]
