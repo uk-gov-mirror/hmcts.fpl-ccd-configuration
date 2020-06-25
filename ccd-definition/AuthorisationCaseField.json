@@ -37,5 +37,12 @@
     "CaseFieldID": "caseName",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseName",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
   }
 ]
