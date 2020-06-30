@@ -23,6 +23,8 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.SecuredDocument;
+import uk.gov.hmcts.reform.fpl.model.common.SimpleDocument;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
@@ -486,5 +488,8 @@ public class CaseData {
     }
 
     private final DocumentReference submittedForm;
+
+    private final SecuredDocument document1;
+    private final DocumentReference document2;
 
 }

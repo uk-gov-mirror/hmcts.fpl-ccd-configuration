@@ -1577,5 +1577,21 @@
     "Label": "Return details",
     "FieldType": "ReturnApplication",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "document1",
+    "Label": "Document 1",
+    "FieldType": "UploadSecuredDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "document2",
+    "Label": "Document 2",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
   }
 ]
