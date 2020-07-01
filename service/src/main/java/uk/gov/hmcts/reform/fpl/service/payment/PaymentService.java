@@ -4,6 +4,7 @@ import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
@@ -108,9 +109,11 @@ public class PaymentService {
             .build();
     }
 
-    private void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
+    @Async
+    public void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
         try {
-            paymentApi.createCreditAccountPayment(requestData.authorisation(),
+            Thread.sleep(3000L);
+            paymentApi.createCreditAccountPayment("requestData.authorisation()",
                 authTokenGenerator.generate(),
                 creditAccountPaymentRequest);
         } catch (FeignException ex) {
@@ -118,6 +121,8 @@ public class PaymentService {
                 creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
 
             throw new PaymentsApiException(ex.contentUTF8(), ex);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
@@ -22,11 +21,12 @@ public class SecurityConfiguration {
     static class SecurityConfigurationWithUserTokenValidator extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-                .authorizeRequests()
-                    .antMatchers("/callback/**")
-                    .authenticated();
+//            http
+//                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+//                .authorizeRequests()
+//                    .antMatchers("/callback/**")
+//                    .authenticated();
+//        }
         }
     }
 
