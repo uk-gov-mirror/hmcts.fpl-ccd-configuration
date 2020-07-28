@@ -18,6 +18,16 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 2,
+    "CaseFieldID": "documentX",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 2,
     "CaseFieldID": "ordersAndDirectionsSubHeadingLabel",
     "FieldShowCondition": "orders!=\"\"",
     "TabFieldDisplayOrder": 2

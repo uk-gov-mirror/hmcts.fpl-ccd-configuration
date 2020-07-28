@@ -607,4 +607,6 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
+    private final DocumentReference documentX;
+
 }
