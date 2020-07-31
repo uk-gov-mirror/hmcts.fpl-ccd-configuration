@@ -13,11 +13,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsServiceTest;
 import uk.gov.hmcts.reform.fpl.service.OthersServiceTest;
 
 import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 
 @Api
 @RestController
@@ -25,8 +29,9 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OthersController {
     private final ObjectMapper mapper;
-    private final ConfidentialDetailsService confidentialService;
+    private final ConfidentialDetailsServiceTest confidentialServiceTest;
     private final OthersServiceTest othersServiceTest;
+    private final ConfidentialDetailsService confidentialDetailsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -52,18 +57,18 @@ public class OthersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         List<Element<Other>> allOthers = caseData.getAllOthers();
 
-//        confidentialService.addConfidentialDetailsToCase(caseDetails, allOthers, OTHER);
-//
-//        List<Element<Other>> others = confidentialService.removeConfidentialDetails(allOthers);
-//
-//        caseDetails.getData().put("others", Others.from(others));
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, allOthers, OTHER);
+
+        List<Element<Other>> others = confidentialDetailsService.removeConfidentialDetails(allOthers);
+
+        caseDetails.getData().put("others", Others.from(others));
 
 //        List<Element<Other>> confidentialOthers =
-//            confidentialService.addPartyMarkedConfidentialToList(caseData.getAllOthers());
+//            confidentialServiceTest.addPartyMarkedConfidentialToList(caseData.getAllOthers());
 //
-//        List<Element<Other>> confidentialOthersModified = othersService.retainConfidentialDetails(confidentialOthers);
+//        List<Element<Other>> confidentialOthersModified = othersServiceTest.retainConfidentialDetails(confidentialOthers);
 //
-//        confidentialService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersModified, OTHER);
+//        confidentialServiceTest.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersModified, ConfidentialPartyType.OTHER);
 //
 //        caseDetails.getData().put("others", othersServiceTest.modifyHiddenValues(caseData.getAllOthers()));
 
