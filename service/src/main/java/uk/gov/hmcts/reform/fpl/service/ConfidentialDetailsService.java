@@ -79,7 +79,13 @@ public class ConfidentialDetailsService {
 
                     // code due to others following a different data structure.
                     if (defaultValue == null) {
-                        confidentialParty = handleOthers(all, confidential, party);
+                        T firstOther = getFirstOther(confidential, all, party);
+                        List<Element<T>> additionalOthers = getAdditionalOthers(all);
+
+                        collection.add(element(element.getId(), firstOther));
+                        collection.addAll(additionalOthers);
+
+                        return;
                     }
 
                     collection.add(element(element.getId(), confidentialParty));
@@ -91,18 +97,25 @@ public class ConfidentialDetailsService {
         return collection;
     }
 
-    private <T extends ConfidentialParty<T>> T handleOthers(List<Element<T>> all,
-                                                            List<Element<T>> confidential,
-                                                            T party) {
-        T confidentialParty;
-        List<UUID> ids = all.stream().map(Element::getId).collect(toList());
+    private <T extends ConfidentialParty<T>> T getFirstOther(List<Element<T>> confidentialOthers, List<Element<T>> others,
+                                                             T party) {
+        List<UUID> ids = others.stream().map(Element::getId).collect(toList());
 
-        confidentialParty = confidential.stream()
-            .filter(other -> !ids.contains(other.getId()))
-            .map(other -> party.addConfidentialDetails(other.getValue().toParty()))
-            .findFirst()
-            .orElse(party);
-        return confidentialParty;
+        if (!others.isEmpty()) {
+            return confidentialOthers.stream()
+                .filter(other -> !ids.contains(other.getId()))
+                .map(other -> party.addConfidentialDetails(others.get(0).getValue().toParty()))
+                .findFirst()
+                .orElse(others.get(0).getValue());
+        }
+        return null;
+    }
+
+    private <T extends ConfidentialParty<T>>List<Element<T>> getAdditionalOthers(List<Element<T>> others) {
+        if (isNotEmpty(others)) {
+            others.remove(0);
+        }
+        return others;
     }
 
     private <T> T getItemToAdd(List<Element<T>> confidential, Element<T> element) {
