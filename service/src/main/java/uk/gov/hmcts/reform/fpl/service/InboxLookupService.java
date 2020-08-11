@@ -40,8 +40,8 @@ public class InboxLookupService {
             .orElseGet(() -> getSolicitorOrFallbackEmail(solicitor));
     }
 
-    private String getSolicitorOrFallbackEmail(final Solicitor solicitor) {
-        return Optional.of(solicitor)
+    public String getSolicitorOrFallbackEmail(final Solicitor solicitor) {
+        return Optional.ofNullable(solicitor)
             .map(Solicitor::getEmail)
             .filter(StringUtils::isNotBlank)
             .orElse(fallbackInbox);
