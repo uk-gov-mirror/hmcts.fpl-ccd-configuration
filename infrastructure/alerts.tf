@@ -1,5 +1,5 @@
 locals {
-  alert_resource_group_name = "${var.product}-${var.component}-${var.env}"
+  alert_resource_group_name = "${var.product}-${var.component}-${var.env}-alerts"
 }
 
 module "fpl-action-group" {
