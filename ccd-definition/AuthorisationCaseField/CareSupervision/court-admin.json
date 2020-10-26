@@ -1398,5 +1398,19 @@
     "CaseFieldID": "orderTabHeading",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "referToJudgeList",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noteForJudge",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
   }
 ]

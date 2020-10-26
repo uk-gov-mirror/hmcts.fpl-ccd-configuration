@@ -552,4 +552,5 @@ public class CaseData {
     private final String sendNoticeOfHearing;
     private final HearingOptions hearingOption;
     private final List<ProceedingType> proceedingType;
+    private final Object referToJudgeList;
 }
