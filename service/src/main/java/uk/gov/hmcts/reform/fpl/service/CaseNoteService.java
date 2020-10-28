@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.JudgeNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -31,8 +32,25 @@ public class CaseNoteService {
             .build();
     }
 
+    public JudgeNote buildCaseNoteForJudge(String authorisation, String note) {
+        UserInfo userDetails = idamClient.getUserInfo(authorisation);
+
+        return JudgeNote.builder()
+            .createdBy(userDetails.getName())
+            .date(time.now().toLocalDate())
+            .note(note)
+            .build();
+    }
+
     public List<Element<CaseNote>> addNoteToList(CaseNote caseNote, List<Element<CaseNote>> caseNotes) {
         List<Element<CaseNote>> updatedCaseNotes = ofNullable(caseNotes).orElse(newArrayList());
+        updatedCaseNotes.add(element(caseNote));
+
+        return updatedCaseNotes;
+    }
+
+    public List<Element<JudgeNote>> addJudgeNoteToList(JudgeNote caseNote, List<Element<JudgeNote>> caseNotes) {
+        List<Element<JudgeNote>> updatedCaseNotes = ofNullable(caseNotes).orElse(newArrayList());
         updatedCaseNotes.add(element(caseNote));
 
         return updatedCaseNotes;

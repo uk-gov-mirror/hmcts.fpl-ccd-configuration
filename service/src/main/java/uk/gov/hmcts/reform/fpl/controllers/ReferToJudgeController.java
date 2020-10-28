@@ -12,12 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.JudgeNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
 
 import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -59,10 +61,14 @@ public class ReferToJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        CaseNote caseNote = service.buildCaseNote(requestData.authorisation(), caseData.getCaseNote());
-        List<Element<CaseNote>> caseNotes = service.addNoteToList(caseNote, caseData.getCaseNotes());
+        JudgeNote caseNote = service.buildCaseNoteForJudge(requestData.authorisation(), caseData.getJudgeNote());
+        List<Element<JudgeNote>> caseNotes = service.addJudgeNoteToList(caseNote, caseData.getJudgeNotes());
 
-        caseDetails.getData().put("judgeNotes", caseNotes);
+        JudgeNote judgeNote =  JudgeNote.builder()
+            .note("test note")
+            .build();
+
+        caseDetails.getData().put("judgeNotes", List.of(element(judgeNote), element(judgeNote)));
         caseDetails.getData().remove("judgeNote");
 
         return respond(caseDetails);

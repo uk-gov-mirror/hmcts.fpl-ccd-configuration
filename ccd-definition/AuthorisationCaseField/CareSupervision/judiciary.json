@@ -1171,7 +1171,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "noteForJudge",
+    "CaseFieldID": "judgeNote",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "judgeNotes",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   }

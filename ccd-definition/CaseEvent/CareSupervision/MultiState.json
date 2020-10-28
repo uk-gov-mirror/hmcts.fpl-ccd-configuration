@@ -650,6 +650,6 @@
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/refer-to-judge/about-to-start",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/refer-to-judge/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/refer-to-judge/about-to-submit"
   }
 ]
