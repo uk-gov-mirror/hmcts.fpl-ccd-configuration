@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.AddOrEditReferralNote;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
@@ -557,5 +558,6 @@ public class CaseData {
     private final String judgeNote;
     private final String judgeEmailForReferral;
     private final List<Element<JudgeNote>> judgeNotes;
+    private final AddOrEditReferralNote addOrEditReferralNote;
 
 }

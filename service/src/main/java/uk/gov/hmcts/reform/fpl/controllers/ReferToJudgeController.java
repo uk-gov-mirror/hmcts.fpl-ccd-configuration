@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.AddOrEditReferralNote;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudgeNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -18,9 +20,11 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
 @Api
 @RestController
@@ -30,6 +34,7 @@ public class ReferToJudgeController extends CallbackController {
 
     private final CaseNoteService service;
     private final RequestData requestData;
+    private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -53,7 +58,19 @@ public class ReferToJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        System.out.println("I am in the mid event");
+        if(caseData.getAddOrEditReferralNote() == AddOrEditReferralNote.RESPOND_TO_NOTE) {
+
+            UUID referralNoteId = getDynamicListValueCode(caseData.getJudgeReferralNoteList(), mapper);
+            AtomicInteger counter = new AtomicInteger(0);
+            List<Element<JudgeNote>> judgeReferralNotes = caseData.getJudgeNotes();
+
+            caseDetails.getData().put("judgeReferralNoteList",
+                asDynamicList(judgeReferralNotes, referralNoteId, judgeNote ->
+                    judgeNote.toLabel(counter.incrementAndGet())));
+
+            caseDetails.getData().put("judgeNote", "This is a test");
+
+        }
         return respond(caseDetails);
     }
 
