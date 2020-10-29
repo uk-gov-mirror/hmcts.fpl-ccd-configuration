@@ -555,6 +555,7 @@ public class CaseData {
 
     private final Object referToJudgeList;
     private final String judgeNote;
+    private final String judgeNameForReferral;
     private final List<Element<JudgeNote>> judgeNotes;
 
 }

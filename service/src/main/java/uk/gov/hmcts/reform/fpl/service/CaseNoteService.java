@@ -32,12 +32,13 @@ public class CaseNoteService {
             .build();
     }
 
-    public JudgeNote buildCaseNoteForJudge(String authorisation, String note) {
+    public JudgeNote buildCaseNoteForJudge(String authorisation, String note, String judgeName) {
         UserInfo userDetails = idamClient.getUserInfo(authorisation);
 
         return JudgeNote.builder()
             .createdBy(userDetails.getName())
             .date(time.now().toLocalDate())
+            .judgeName(judgeName)
             .note(note)
             .build();
     }
