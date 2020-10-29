@@ -14,6 +14,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "referToJudge",
+    "CaseFieldID": "judgeReferralNoteList",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "AddOrEditJudgeNote",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "addOrEditReferralNote=\"RESPOND_TO_NOTE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "referToJudge",
     "CaseFieldID": "judgeEmailForReferral",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
