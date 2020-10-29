@@ -61,8 +61,4 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
             .legalAdvisorName(legalAdvisorName)
             .build();
     }
-
-    public String toLabel() {
-       return "Test judge name";
-    }
 }

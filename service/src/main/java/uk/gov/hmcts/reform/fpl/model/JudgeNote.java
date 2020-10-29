@@ -12,4 +12,8 @@ public class JudgeNote {
     private final LocalDate date;
     private final String note;
     private final String judgeEmailForReferral;
+
+    public String toLabel(int counter) {
+        return "Note " + counter + " for " + judgeEmailForReferral;
+    }
 }

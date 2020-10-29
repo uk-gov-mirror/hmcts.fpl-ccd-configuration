@@ -553,7 +553,7 @@ public class CaseData {
     private final HearingOptions hearingOption;
     private final List<ProceedingType> proceedingType;
 
-    private final Object referToJudgeList;
+    private final Object judgeReferralNoteList;
     private final String judgeNote;
     private final String judgeEmailForReferral;
     private final List<Element<JudgeNote>> judgeNotes;

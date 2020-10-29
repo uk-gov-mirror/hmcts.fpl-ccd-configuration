@@ -18,6 +18,9 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 
 @Api
 @RestController
@@ -32,24 +35,15 @@ public class ReferToJudgeController extends CallbackController {
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-//
-//        Judge allocatedJudge = caseData.getAllocatedJudge();
-//
-//        JudgeAndLegalAdvisor migratedAllocatedJudge = JudgeAndLegalAdvisor.builder()
-//                .judgeTitle(allocatedJudge.getJudgeTitle())
-//                .otherTitle(allocatedJudge.getOtherTitle())
-//                .judgeLastName(allocatedJudge.getJudgeLastName())
-//                .judgeFullName(allocatedJudge.getJudgeFullName())
-//                .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress())
-//                .build();
-//
-//        List<Element<JudgeAndLegalAdvisor>> judgeList = List.of(element(migratedAllocatedJudge));
-//
-//        caseDetails.getData().put("referToJudgeList",
-//                asDynamicList(judgeList, judgeAndLegalAdvisor ->
-//                    judgeAndLegalAdvisor.toLabel()));
-//        caseDetails.getData().put("hasExistingHearings", YES.getValue());
 
+        // Could filter these by ones which don't have a response yet and only show them in list
+        List<Element<JudgeNote>> judgeReferralNotes = caseData.getJudgeNotes();
+
+        AtomicInteger counter = new AtomicInteger(0);
+
+        caseDetails.getData().put("judgeReferralNoteList",
+                asDynamicList(judgeReferralNotes, judgeNote ->
+                    judgeNote.toLabel(counter.incrementAndGet())));
 
         return respond(caseDetails);
     }
