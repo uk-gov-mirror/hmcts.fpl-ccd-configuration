@@ -19,8 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-
 @Api
 @RestController
 @RequestMapping("/callback/refer-to-judge")
@@ -64,11 +62,7 @@ public class ReferToJudgeController extends CallbackController {
         JudgeNote caseNote = service.buildCaseNoteForJudge(requestData.authorisation(), caseData.getJudgeNote());
         List<Element<JudgeNote>> caseNotes = service.addJudgeNoteToList(caseNote, caseData.getJudgeNotes());
 
-        JudgeNote judgeNote =  JudgeNote.builder()
-            .note("test note")
-            .build();
-
-        caseDetails.getData().put("judgeNotes", List.of(element(judgeNote), element(judgeNote)));
+        caseDetails.getData().put("judgeNotes", caseNotes);
         caseDetails.getData().remove("judgeNote");
 
         return respond(caseDetails);
