@@ -11,5 +11,5 @@ public class JudgeNote {
     private final String createdBy;
     private final LocalDate date;
     private final String note;
-    private final String judgeName;
+    private final String judgeEmailForReferral;
 }

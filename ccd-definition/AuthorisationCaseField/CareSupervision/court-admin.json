@@ -1423,7 +1423,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "judgeNameForReferral",
+    "CaseFieldID": "judgeEmailForReferral",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   }

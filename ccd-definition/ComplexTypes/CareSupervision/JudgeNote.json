@@ -26,7 +26,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeNote",
-    "ListElementCode": "judgeName",
+    "ListElementCode": "judgeEmailForReferral",
     "FieldType": "Text",
     "ElementLabel": "Referred to judge",
     "SecurityClassification": "Public"

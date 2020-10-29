@@ -38,7 +38,7 @@ public class CaseNoteService {
         return JudgeNote.builder()
             .createdBy(userDetails.getName())
             .date(time.now().toLocalDate())
-            .judgeName(judgeName)
+            .judgeEmailForReferral(judgeName)
             .note(note)
             .build();
     }
