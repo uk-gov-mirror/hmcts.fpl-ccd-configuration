@@ -10,6 +10,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addOrEditReferralNote",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "AddOrEditReferralNote",
+    "Label": "Would you like to add or respond to a note?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judgeEmailForReferral",
     "Label": "Judge email",
     "FieldType": "Text",

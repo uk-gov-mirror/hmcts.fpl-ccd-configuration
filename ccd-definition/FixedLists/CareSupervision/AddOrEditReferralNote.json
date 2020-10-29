@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AddOrEditReferralNote",
+    "ListElementCode": "REMOVE_TO_ACCOMMODATION",
+    "ListElement": "Add a note",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AddOrEditReferralNote",
+    "ListElementCode": "PREVENT_REMOVAL",
+    "ListElement": "Respond to a note",
+    "DisplayOrder": 2
+  }
+]
