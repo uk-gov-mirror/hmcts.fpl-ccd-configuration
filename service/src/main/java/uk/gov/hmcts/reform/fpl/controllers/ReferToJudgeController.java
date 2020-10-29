@@ -20,10 +20,12 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
 @Api
@@ -68,12 +70,14 @@ public class ReferToJudgeController extends CallbackController {
                 asDynamicList(judgeReferralNotes, referralNoteId, judgeNote ->
                     judgeNote.toLabel(counter.incrementAndGet())));
 
-            caseDetails.getData().put("judgeNote", "This is a test");
+            Optional<Element<JudgeNote>> judgeNoteElement = findElement(referralNoteId, caseData.getJudgeNotes());
+
+            caseDetails.getData().put("judgeNote", judgeNoteElement.get().getValue().getNote());
+            caseDetails.getData().put("judgeEmailForReferral", judgeNoteElement.get().getValue().getJudgeEmailForReferral());
 
         }
         return respond(caseDetails);
     }
-
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
