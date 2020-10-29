@@ -48,6 +48,16 @@ public class ReferToJudgeController extends CallbackController {
         return respond(caseDetails);
     }
 
+    @PostMapping("/mid-event")
+    public CallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        System.out.println("I am in the mid event");
+        return respond(caseDetails);
+    }
+
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
