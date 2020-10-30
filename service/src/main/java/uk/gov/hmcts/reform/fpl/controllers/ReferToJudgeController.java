@@ -74,6 +74,7 @@ public class ReferToJudgeController extends CallbackController {
 
             caseDetails.getData().put("judgeNote", judgeNoteElement.get().getValue().getNote());
             caseDetails.getData().put("judgeEmailForReferral", judgeNoteElement.get().getValue().getJudgeEmailForReferral());
+            caseDetails.getData().put("judgeResponse", judgeNoteElement.get().getValue().getJudgeResponse());
             caseDetails.getData().put("pageShow", "Yes");
 
         }
@@ -89,6 +90,7 @@ public class ReferToJudgeController extends CallbackController {
             caseData.getJudgeResponse());
         List<Element<JudgeNote>> caseNotes = service.addJudgeNoteToList(caseNote, caseData.getJudgeNotes());
 
+        //TO DO don't create a new note if only response is being added but add to existing element of judge notes
         caseDetails.getData().put("judgeNotes", caseNotes);
         caseDetails.getData().remove("judgeNote");
         caseDetails.getData().remove("judgeEmailForReferral");
