@@ -556,6 +556,7 @@ public class CaseData {
 
     private final Object judgeReferralNoteList;
     private final String judgeNote;
+    private final String judgeResponse;
     private final String judgeEmailForReferral;
     private final List<Element<JudgeNote>> judgeNotes;
     private final AddOrEditReferralNote addOrEditReferralNote;

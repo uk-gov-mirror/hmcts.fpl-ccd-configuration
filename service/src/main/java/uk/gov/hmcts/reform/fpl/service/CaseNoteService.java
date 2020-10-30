@@ -32,7 +32,7 @@ public class CaseNoteService {
             .build();
     }
 
-    public JudgeNote buildCaseNoteForJudge(String authorisation, String note, String judgeName) {
+    public JudgeNote buildCaseNoteForJudge(String authorisation, String note, String judgeName, String judgeResponse) {
         UserInfo userDetails = idamClient.getUserInfo(authorisation);
 
         return JudgeNote.builder()
@@ -40,6 +40,7 @@ public class CaseNoteService {
             .date(time.now().toLocalDate())
             .judgeEmailForReferral(judgeName)
             .note(note)
+            .judgeResponse(judgeResponse)
             .build();
     }
 

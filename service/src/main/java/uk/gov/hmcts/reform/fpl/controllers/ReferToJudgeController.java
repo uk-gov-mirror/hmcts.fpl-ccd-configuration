@@ -85,7 +85,8 @@ public class ReferToJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        JudgeNote caseNote = service.buildCaseNoteForJudge(requestData.authorisation(), caseData.getJudgeNote(), caseData.getJudgeEmailForReferral());
+        JudgeNote caseNote = service.buildCaseNoteForJudge(requestData.authorisation(), caseData.getJudgeNote(), caseData.getJudgeEmailForReferral(),
+            caseData.getJudgeResponse());
         List<Element<JudgeNote>> caseNotes = service.addJudgeNoteToList(caseNote, caseData.getJudgeNotes());
 
         caseDetails.getData().put("judgeNotes", caseNotes);
