@@ -86,18 +86,15 @@ public class ReferToJudgeController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseData = getCaseData(caseDetails);
         List<Element<JudgeNote>> caseNotes;
 
         if(caseData.getAddOrEditReferralNote() == AddOrEditReferralNote.RESPOND_TO_NOTE) {
-            System.out.println("You are responding");
-            //if lists are same find modified one
+
          caseNotes = caseData.getJudgeNotes().stream()
             .map(Element::getValue)
             .map(judgeNote -> {
                 if(judgeNote.getNote().equals(caseData.getJudgeNote())) {
-                    System.out.println("Notes are the same so not going to add new");
                     JudgeNote modifiedNote = JudgeNote.builder()
                         .createdBy(judgeNote.getCreatedBy())
                         .date(judgeNote.getDate())
@@ -112,7 +109,6 @@ public class ReferToJudgeController extends CallbackController {
 
             }).collect(Collectors.toList());
         } else {
-            System.out.println("You are adding a new one");
             JudgeNote caseNote = service.buildCaseNoteForJudge(requestData.authorisation(), caseData.getJudgeNote(), caseData.getJudgeEmailForReferral(),
                 caseData.getJudgeResponse());
             caseNotes = service.addJudgeNoteToList(caseNote, caseData.getJudgeNotes());
