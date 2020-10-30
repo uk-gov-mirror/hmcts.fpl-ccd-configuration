@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
@@ -84,11 +86,37 @@ public class ReferToJudgeController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseData = getCaseData(caseDetails);
+        List<Element<JudgeNote>> caseNotes;
 
-        JudgeNote caseNote = service.buildCaseNoteForJudge(requestData.authorisation(), caseData.getJudgeNote(), caseData.getJudgeEmailForReferral(),
-            caseData.getJudgeResponse());
-        List<Element<JudgeNote>> caseNotes = service.addJudgeNoteToList(caseNote, caseData.getJudgeNotes());
+        if(caseData.getAddOrEditReferralNote() == AddOrEditReferralNote.RESPOND_TO_NOTE) {
+            System.out.println("You are responding");
+            //if lists are same find modified one
+         caseNotes = caseData.getJudgeNotes().stream()
+            .map(Element::getValue)
+            .map(judgeNote -> {
+                if(judgeNote.getNote().equals(caseData.getJudgeNote())) {
+                    System.out.println("Notes are the same so not going to add new");
+                    JudgeNote modifiedNote = JudgeNote.builder()
+                        .createdBy(judgeNote.getCreatedBy())
+                        .date(judgeNote.getDate())
+                        .judgeEmailForReferral(judgeNote.getJudgeEmailForReferral())
+                        .note(judgeNote.getNote())
+                        .judgeResponse(caseData.getJudgeResponse())
+                        .build();
+                    return element(modifiedNote);
+                } else {
+                   return element(judgeNote);
+                }
+
+            }).collect(Collectors.toList());
+        } else {
+            System.out.println("You are adding a new one");
+            JudgeNote caseNote = service.buildCaseNoteForJudge(requestData.authorisation(), caseData.getJudgeNote(), caseData.getJudgeEmailForReferral(),
+                caseData.getJudgeResponse());
+            caseNotes = service.addJudgeNoteToList(caseNote, caseData.getJudgeNotes());
+        }
 
         //TO DO don't create a new note if only response is being added but add to existing element of judge notes
         caseDetails.getData().put("judgeNotes", caseNotes);
