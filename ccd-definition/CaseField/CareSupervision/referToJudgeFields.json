@@ -33,5 +33,15 @@
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Comment": "The note field to be displayed in an event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judgeResponse",
+    "Label": "Response",
+    "HintText": "Add response to note",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "The note field to be displayed in an event"
   }
 ]
