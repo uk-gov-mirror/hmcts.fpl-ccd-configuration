@@ -74,6 +74,7 @@ public class ReferToJudgeController extends CallbackController {
 
             caseDetails.getData().put("judgeNote", judgeNoteElement.get().getValue().getNote());
             caseDetails.getData().put("judgeEmailForReferral", judgeNoteElement.get().getValue().getJudgeEmailForReferral());
+            caseDetails.getData().put("pageShow", "Yes");
 
         }
         return respond(caseDetails);
@@ -90,6 +91,8 @@ public class ReferToJudgeController extends CallbackController {
         caseDetails.getData().put("judgeNotes", caseNotes);
         caseDetails.getData().remove("judgeNote");
         caseDetails.getData().remove("judgeEmailForReferral");
+        caseDetails.getData().remove("judgeResponse");
+        caseDetails.getData().put("pageShow", "No");
 
         return respond(caseDetails);
     }
