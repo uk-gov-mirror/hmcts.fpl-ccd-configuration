@@ -15,6 +15,7 @@ public class JudgeNote {
     private final String note;
     private final String judgeEmailForReferral;
     private final String judgeResponse;
+    private final String responseBy;
 
     public String toLabel(int counter) {
         return "Note " + counter + " for " + judgeEmailForReferral;

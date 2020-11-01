@@ -38,5 +38,13 @@
     "FieldType": "TextArea",
     "ElementLabel": "Response",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeNote",
+    "ListElementCode": "responseBy",
+    "FieldType": "Text",
+    "ElementLabel": "Response by",
+    "SecurityClassification": "Public"
   }
 ]

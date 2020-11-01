@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.fpl.model.JudgeNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,7 @@ public class ReferToJudgeController extends CallbackController {
     private final CaseNoteService service;
     private final RequestData requestData;
     private final ObjectMapper mapper;
+    private final IdamClient idamClient;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -88,6 +91,7 @@ public class ReferToJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         List<Element<JudgeNote>> caseNotes;
+        UserInfo userDetails = idamClient.getUserInfo(requestData.authorisation());
 
         if(caseData.getAddOrEditReferralNote() == AddOrEditReferralNote.RESPOND_TO_NOTE) {
 
@@ -100,6 +104,7 @@ public class ReferToJudgeController extends CallbackController {
                         .date(judgeNote.getDate())
                         .judgeEmailForReferral(judgeNote.getJudgeEmailForReferral())
                         .note(judgeNote.getNote())
+                        .responseBy(userDetails.getName())
                         .judgeResponse(caseData.getJudgeResponse())
                         .build();
                     return element(modifiedNote);
