@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "PaymentsTab",
     "TabLabel": "Payment History",
-    "TabDisplayOrder": 11,
+    "TabDisplayOrder": 12,
     "CaseFieldID": "paymentHistory",
     "TabFieldDisplayOrder": 1
   }

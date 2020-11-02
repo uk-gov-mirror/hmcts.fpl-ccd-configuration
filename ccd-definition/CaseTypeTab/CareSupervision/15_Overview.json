@@ -5,8 +5,8 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
-    "CaseFieldID": "returnApplication",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewCaseState",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -15,8 +15,8 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
-    "CaseFieldID": "caseCompletionDate",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "returnApplication",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -25,9 +25,10 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
-    "CaseFieldID": "caseExtensionReasonList",
-    "TabFieldDisplayOrder": 3
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseExtensionHeading",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "caseCompletionDate!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -35,9 +36,29 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseCompletionDate",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseExtensionReasonList",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
     "CaseFieldID": "extensionComments",
-    "TabFieldDisplayOrder": 4,
+    "TabFieldDisplayOrder": 6,
     "FieldShowCondition": "extensionComments!=\"\""
   },
   {
@@ -46,8 +67,275 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "closeCaseTabField",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewNextHearingHeading",
+    "TabFieldDisplayOrder": 11,
+    "FieldShowCondition": "nextHearingDate!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "nextHearingDate",
+    "TabFieldDisplayOrder": 12
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewAllocatedJudgeLabel",
+    "TabFieldDisplayOrder": 13,
+    "FieldShowCondition": "overviewAllocatedJudgeLabel!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "showHearingNeeds",
+    "TabFieldDisplayOrder": 14,
+    "FieldShowCondition": "showHearingNeeds=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewHearingNeedsHeading",
+    "TabFieldDisplayOrder": 14,
+    "FieldShowCondition": "showHearingNeeds=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewInterpreterDetails",
+    "TabFieldDisplayOrder": 15,
+    "FieldShowCondition": "overviewInterpreterDetails!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewDisabilityAssistanceDetails",
+    "TabFieldDisplayOrder": 16,
+    "FieldShowCondition": "overviewDisabilityAssistanceDetails!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewExtraSecurityDetails",
+    "TabFieldDisplayOrder": 17,
+    "FieldShowCondition": "overviewExtraSecurityDetails!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewWelshDetails",
+    "TabFieldDisplayOrder": 18,
+    "FieldShowCondition": "overviewWelshDetails!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewIntermediaryDetails",
+    "TabFieldDisplayOrder": 19,
+    "FieldShowCondition": "overviewIntermediaryDetails!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewHearingAdditionalDetails",
+    "TabFieldDisplayOrder": 20,
+    "FieldShowCondition": "overviewHearingAdditionalDetails!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewPreviousHearingsHeading",
+    "TabFieldDisplayOrder": 21,
+    "FieldShowCondition": "previousHearingDate!=\"\" AND adjournedHearingType!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "previousHearingDate",
+    "TabFieldDisplayOrder": 22
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "adjournedHearingType",
+    "TabFieldDisplayOrder": 23
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "adjournedHearingDate",
+    "TabFieldDisplayOrder": 24
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "adjournedHearingReason",
+    "TabFieldDisplayOrder": 25
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "ordersHeading",
+    "TabFieldDisplayOrder": 26,
+    "FieldShowCondition": "overviewRequestedOrders!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewRequestedOrders",
+    "TabFieldDisplayOrder": 27
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "urgentCase",
+    "TabFieldDisplayOrder": 28,
+    "FieldShowCondition": "urgentCase!=\"Yes1\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "lastOrderHeading",
+    "TabFieldDisplayOrder": 29,
+    "FieldShowCondition": "overviewLastOrderType!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewLastOrderType",
+    "TabFieldDisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewLastOrderDate",
+    "TabFieldDisplayOrder": 31
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewLastOrderDetails",
+    "TabFieldDisplayOrder": 32,
+    "FieldShowCondition": "overviewLastOrderDetails!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewFurtherDirectionsNeeded",
+    "TabFieldDisplayOrder": 33,
+    "FieldShowCondition": "overviewFurtherDirectionsNeeded!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewFurtherDirections",
+    "TabFieldDisplayOrder": 34,
+    "FieldShowCondition": "overviewFurtherDirections!=\"\""
   }
 ]

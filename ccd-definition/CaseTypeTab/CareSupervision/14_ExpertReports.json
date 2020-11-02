@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "ExpertReportsTab",
     "TabLabel": "Expert Reports",
-    "TabDisplayOrder": 14,
+    "TabDisplayOrder": 15,
     "CaseFieldID": "expertReport",
     "TabFieldDisplayOrder": 1
   }

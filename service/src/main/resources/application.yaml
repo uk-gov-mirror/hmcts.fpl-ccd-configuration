@@ -130,7 +130,12 @@ scheduler:
       description: 'Finds upcoming hearings'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
       cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
-
+    - name: 'Overview next hearings'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Update overview upcoming hearings data'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.CaseOverviewDataUpdater'
+      cron: 0 0/10 * * * ?
 testing:
   support:
     enabled: ${TESTING_SUPPORT_ENABLED:false}
@@ -246,7 +251,7 @@ security:
   authorisedServices:
 
 scheduler:
-  enabled: false
+  enabled: true
 
 testing:
   support:
@@ -359,7 +364,7 @@ robotics:
     recipient: FamilyPublicLaw+robotics@gmail.com
 
 scheduler:
-  enabled: false
+  enabled: true
 
 testing:
   support:
