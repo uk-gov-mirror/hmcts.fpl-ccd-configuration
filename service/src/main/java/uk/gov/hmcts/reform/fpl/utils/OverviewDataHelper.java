@@ -129,10 +129,11 @@ public class OverviewDataHelper {
 
         overviewData.put("nextHearingDate", hearingBooking.getStartDate());
 
-        if (caseData.getAllocatedJudge() != null) {
+        if (hearingBooking.getJudgeAndLegalAdvisor() != null) {
+
             overviewData.put("overviewAllocatedJudgeLabel",
                 String.join(
-                    " ", caseData.getAllocatedJudge().getJudgeOrMagistrateTitle(), caseData.getAllocatedJudge().getJudgeName()
+                    " ", hearingBooking.getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle(), hearingBooking.getJudgeAndLegalAdvisor().getJudgeName()
                 ));
         }
     }
