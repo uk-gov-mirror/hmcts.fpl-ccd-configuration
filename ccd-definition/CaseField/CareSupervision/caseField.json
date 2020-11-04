@@ -1290,7 +1290,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "overviewHearingNeedsHeading",
-    "Label": "## Hearing Needs",
+    "Label": "## Hearing Needs Requested",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },

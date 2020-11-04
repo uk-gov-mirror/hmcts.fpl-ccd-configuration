@@ -134,7 +134,7 @@ scheduler:
       enabled: true
       cronGroup: "NIGHTLY_CRON"
       description: 'Update overview upcoming hearings data'
-      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.CaseOverviewDataUpdater'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.CaseOverviewHearingDataUpdater'
       cron: 0 0/10 * * * ?
 testing:
   support:
@@ -364,7 +364,7 @@ robotics:
     recipient: FamilyPublicLaw+robotics@gmail.com
 
 scheduler:
-  enabled: true
+  enabled: false
 
 testing:
   support:

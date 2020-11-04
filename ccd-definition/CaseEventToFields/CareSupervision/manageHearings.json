@@ -393,5 +393,17 @@
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 6,
     "FieldShowCondition": "sendNoticeOfHearing=\"HIDE_ALWAYS\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "previousHearingType",
+    "PageFieldDisplayOrder": 20,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "SendNoticeOfHearing",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 6,
+    "FieldShowCondition": "sendNoticeOfHearing=\"HIDE_ALWAYS\""
   }
 ]

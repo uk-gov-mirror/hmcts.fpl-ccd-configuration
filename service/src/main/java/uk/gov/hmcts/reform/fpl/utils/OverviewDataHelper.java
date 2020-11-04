@@ -32,9 +32,9 @@ public class OverviewDataHelper {
         updateNextHearingDetails(caseData, overviewData);
         updatePreviousHearingDetails(caseData.getHearingDetails(), overviewData);
 
-        if (caseData.getCancelledHearingDetails() != null) {
+        /*if (caseData.getCancelledHearingDetails() != null) {
             updateAdjournedHearingDetails(caseData.getCancelledHearingDetails(), overviewData);
-        }
+        }*/
 
         updateHearingPreferences(caseData, overviewData);
 
@@ -111,7 +111,10 @@ public class OverviewDataHelper {
             .stream()
             .filter(hearingBooking -> !hearingBooking.startsAfterToday())
             .max(comparing(HearingBooking::getStartDate))
-            .ifPresent(hearing -> overviewData.put("previousHearingDate", hearing.getStartDate()));
+            .ifPresent(hearing -> {
+                overviewData.put("previousHearingDate", hearing.getStartDate());
+                overviewData.put("previousHearingType", hearing.getType().getLabel());
+            });
     }
 
     private static void updateNextHearingDetails(

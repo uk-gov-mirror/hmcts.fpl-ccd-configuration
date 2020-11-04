@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -26,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Slf4j
-public class CaseOverviewDataUpdater implements Job {
+public class CaseOverviewHearingDataUpdater implements Job {
 
     private static final String HEARING_DATE_PROPERTY = "data.hearingDetails.value.startDate";
 
@@ -40,7 +39,7 @@ public class CaseOverviewDataUpdater implements Job {
     private CoreCaseDataService coreCaseDataService;
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         final String jobName = context.getJobDetail().getKey().getName();
         log.info("Job {} started", jobName);
 
@@ -54,7 +53,7 @@ public class CaseOverviewDataUpdater implements Job {
                 cases.stream().map(details -> details.getId().toString()).collect(Collectors.joining(","))
             );
 
-            // TODO: case states which allows update
+            // TODO: case states which allow update
             List<String> updatedCaseReferences = cases.stream()
                 .filter(caseDetails -> State.SUBMITTED.getValue().equals(caseDetails.getState()))
                 .map(caseDetails -> {

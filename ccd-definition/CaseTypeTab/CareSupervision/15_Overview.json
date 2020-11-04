@@ -219,7 +219,7 @@
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "adjournedHearingType",
+    "CaseFieldID": "previousHearingType",
     "TabFieldDisplayOrder": 23
   },
   {
@@ -229,8 +229,20 @@
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
+    "CaseFieldID": "adjournedHearingType",
+    "TabFieldDisplayOrder": 24,
+    "FieldShowCondition": "adjournedHearingType=\"NEVER_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
     "CaseFieldID": "adjournedHearingDate",
-    "TabFieldDisplayOrder": 24
+    "TabFieldDisplayOrder": 25,
+    "FieldShowCondition": "adjournedHearingDate=\"NEVER_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -240,7 +252,8 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
     "CaseFieldID": "adjournedHearingReason",
-    "TabFieldDisplayOrder": 25
+    "TabFieldDisplayOrder": 26,
+    "FieldShowCondition": "adjournedHearingDate=\"NEVER_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -250,7 +263,7 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
     "CaseFieldID": "ordersHeading",
-    "TabFieldDisplayOrder": 26,
+    "TabFieldDisplayOrder": 27,
     "FieldShowCondition": "overviewRequestedOrders!=\"\""
   },
   {
@@ -261,7 +274,7 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
     "CaseFieldID": "overviewRequestedOrders",
-    "TabFieldDisplayOrder": 27
+    "TabFieldDisplayOrder": 28
   },
   {
     "LiveFrom": "01/01/2017",
@@ -271,7 +284,7 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
     "CaseFieldID": "urgentCase",
-    "TabFieldDisplayOrder": 28,
+    "TabFieldDisplayOrder": 29,
     "FieldShowCondition": "urgentCase!=\"Yes1\""
   },
   {
@@ -282,7 +295,7 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
     "CaseFieldID": "lastOrderHeading",
-    "TabFieldDisplayOrder": 29,
+    "TabFieldDisplayOrder": 30,
     "FieldShowCondition": "overviewLastOrderType!=\"\""
   },
   {
@@ -293,16 +306,6 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
     "CaseFieldID": "overviewLastOrderType",
-    "TabFieldDisplayOrder": 30
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "OverviewTab",
-    "TabLabel": "Overview",
-    "TabDisplayOrder": 1,
-    "CaseFieldID": "overviewLastOrderDate",
     "TabFieldDisplayOrder": 31
   },
   {
@@ -312,8 +315,18 @@
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
+    "CaseFieldID": "overviewLastOrderDate",
+    "TabFieldDisplayOrder": 32
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 1,
     "CaseFieldID": "overviewLastOrderDetails",
-    "TabFieldDisplayOrder": 32,
+    "TabFieldDisplayOrder": 33,
     "FieldShowCondition": "overviewLastOrderDetails!=\"\""
   },
   {
@@ -324,7 +337,7 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
     "CaseFieldID": "overviewFurtherDirectionsNeeded",
-    "TabFieldDisplayOrder": 33,
+    "TabFieldDisplayOrder": 34,
     "FieldShowCondition": "overviewFurtherDirectionsNeeded!=\"\""
   },
   {
@@ -335,7 +348,7 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 1,
     "CaseFieldID": "overviewFurtherDirections",
-    "TabFieldDisplayOrder": 34,
+    "TabFieldDisplayOrder": 35,
     "FieldShowCondition": "overviewFurtherDirections!=\"\""
   }
 ]
