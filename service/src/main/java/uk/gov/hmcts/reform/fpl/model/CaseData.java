@@ -190,6 +190,11 @@ public class CaseData {
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
+
+    private final Child child1;
+    private final Child child2;
+    private final Child child3;
+
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
@@ -621,4 +626,18 @@ public class CaseData {
     private final HearingCancellationReason adjournmentReason;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
+
+    private final Respondent mother;
+    private final Respondent father;
+    private final Respondent child1Father;
+    private final Respondent child2Father;
+    private final Respondent child3Father;
+    private final Respondent maternalGrandfather;
+    private final Respondent maternalGrandmother;
+    private final Respondent fraternalGrandfather;
+    private final Respondent fraternalGrandmother;
+    private final Respondent currentRespondent;
+    private final Object missingRespondents;
+    private final Object existingRespondents;
+    private final String respondentOption;
 }

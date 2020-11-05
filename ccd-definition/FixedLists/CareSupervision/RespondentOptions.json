@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentOptions",
+    "ListElementCode": "NEW_RESPONDENT",
+    "ListElement": "Add respondent",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentOptions",
+    "ListElementCode": "EDIT_RESPONDENT",
+    "ListElement": "Edit respondent",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentOptions",
+    "ListElementCode": "DELETE_RESPONDENT",
+    "ListElement": "Delete respondent",
+    "DisplayOrder": 3
+  }
+]

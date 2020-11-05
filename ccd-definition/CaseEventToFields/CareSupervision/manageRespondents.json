@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageRespondents",
+    "CaseFieldID": "respondentOption",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "RespondentAction",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-respondents/mid-event",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageRespondents",
+    "CaseFieldID": "missingRespondents",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "RespondentAction",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "respondentOption=\"NEW_RESPONDENT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageRespondents",
+    "CaseFieldID": "existingRespondents",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "RespondentAction",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "respondentOption=\"EDIT_RESPONDENT\" OR respondentOption=\"DELETE_RESPONDENT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageRespondents",
+    "CaseFieldID": "currentRespondent",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "Respondent",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 2,
+    "FieldShowCondition": "respondentOption=\"EDIT_RESPONDENT\" OR respondentOption=\"NEW_RESPONDENT\""
+  }
+]

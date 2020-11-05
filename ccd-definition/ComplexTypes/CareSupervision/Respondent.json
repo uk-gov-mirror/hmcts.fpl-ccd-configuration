@@ -1,0 +1,35 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Respondent",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Respondent",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Respondent",
+    "ListElementCode": "dateOfBirth",
+    "FieldType": "Date",
+    "ElementLabel": "Date of birth",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Respondent",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Current address",
+    "SecurityClassification": "Public"
+  }
+]

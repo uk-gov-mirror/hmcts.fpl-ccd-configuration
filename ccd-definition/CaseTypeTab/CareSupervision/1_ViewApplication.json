@@ -387,17 +387,6 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "informationAboutThePartiesHeadingLabel",
-    "FieldShowCondition": "children1!=\"\" OR respondents1!=\"\" OR others!=\"\" OR applicants!=\"\" OR solicitor!=\"\"",
-    "TabFieldDisplayOrder": 37
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "organisationDetailsSubHeadingLabel",
     "FieldShowCondition": "applicants!=\"\" OR solicitor!=\"\"",
     "TabFieldDisplayOrder": 38
@@ -432,38 +421,6 @@
     "CaseFieldID": "organisationDetailsLink",
     "FieldShowCondition": "applicants!=\"\" OR solicitor!=\"\"",
     "TabFieldDisplayOrder": 41
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
-    "CaseFieldID": "childDetailsSubHeadingLabel",
-    "FieldShowCondition": "children1!=\"\"",
-    "TabFieldDisplayOrder": 42
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
-    "CaseFieldID": "children1",
-    "TabFieldDisplayOrder": 43
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
-    "CaseFieldID": "childrenLink",
-    "FieldShowCondition": "children1!=\"\"",
-    "TabFieldDisplayOrder": 44
   },
   {
     "LiveFrom": "01/01/2017",

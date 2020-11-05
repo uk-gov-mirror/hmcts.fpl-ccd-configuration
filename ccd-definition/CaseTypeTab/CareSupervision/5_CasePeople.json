@@ -16,8 +16,27 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "children1",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
+    "CaseFieldID": "child1",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "child2",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "child3",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -30,6 +49,62 @@
     "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 3
   },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "Father repospondent",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "father",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "Child 1 father repospondent",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "child1Father",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "Child 2 father repospondent",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "child2Father",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "Child 3 father repospondent",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "child3Father",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "Mother respondent",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "mother",
+    "TabFieldDisplayOrder": 3
+  },
+
+
+
+
+
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",

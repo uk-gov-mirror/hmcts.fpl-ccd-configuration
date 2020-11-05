@@ -41,6 +41,20 @@ public class ChildController extends CallbackController {
 
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllChildren(), CHILD);
 
+        caseDetails.getData().remove("child1");
+        caseDetails.getData().remove("child2");
+        caseDetails.getData().remove("child3");
+
+        if (caseData.getAllChildren().size() > 0) {
+            caseDetails.getData().put("child1", caseData.getAllChildren().get(0).getValue());
+        }
+        if (caseData.getAllChildren().size() > 1) {
+            caseDetails.getData().put("child2", caseData.getAllChildren().get(1).getValue());
+        }
+        if (caseData.getAllChildren().size() > 2) {
+            caseDetails.getData().put("child2", caseData.getAllChildren().get(2).getValue());
+        }
+
         return respond(caseDetails);
     }
 }

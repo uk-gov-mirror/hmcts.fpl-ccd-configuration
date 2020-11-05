@@ -43,5 +43,89 @@
     "Description": "Cafcass Solicitor role",
     "JurisdictionID": "PUBLICLAW",
     "SecurityClassification": "Public"
+  },
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[MOTHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[FATHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[MATERNALGRANDFATHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[MATERNALGRANDMOTHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[FRATERNALGRANDFATHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[FRATERNALGRANDMOTHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDONEFATHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDTWOFATHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDTHREEFATHERREPRESENTATIVE]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
   }
 ]
