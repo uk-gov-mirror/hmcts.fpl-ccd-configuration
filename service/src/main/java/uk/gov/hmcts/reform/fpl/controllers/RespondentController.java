@@ -22,8 +22,10 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.List;
 import java.util.Objects;
 
+import static java.util.stream.IntStream.rangeClosed;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Api
 @RestController
@@ -70,6 +72,8 @@ public class RespondentController extends CallbackController {
 
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllRespondents(), RESPONDENT);
 
+        flattenRespondents(caseDetails);
+
         return respond(caseDetails);
     }
 
@@ -88,4 +92,18 @@ public class RespondentController extends CallbackController {
 
         return errors.build();
     }
+
+    private static final int MAX_RESPONDENTS = 12;
+
+    private void flattenRespondents(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        rangeClosed(1, MAX_RESPONDENTS)
+            .forEach(i -> caseDetails.getData().remove("respondent" + i));
+
+        int index = 1;
+        for (Respondent respondent : unwrapElements(caseData.getRespondents1())) {
+            caseDetails.getData().put("respondent" + index++, respondent);
+        }
+    }
+
 }
