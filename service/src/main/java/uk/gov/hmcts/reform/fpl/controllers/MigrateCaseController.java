@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -33,10 +35,33 @@ public class MigrateCaseController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        // Extract All types of documents
+        Document checklistDocument = caseData.getChecklistDocument();
+        Document thresholdDocument = caseData.getThresholdDocument();
+        Document socialWorkStatementDocument = caseData.getSocialWorkStatementDocument();
+        Document socialWorkChronologyDocument = caseData.getSocialWorkChronologyDocument();
+        Document socialWorkCarePlanDocument = caseData.getSocialWorkCarePlanDocument();
+        Document socialWorkEvidenceTemplateDocument = caseData.getSocialWorkEvidenceTemplateDocument();
+        Document socialWorkAssessmentDocument = caseData.getSocialWorkAssessmentDocument();
 
-        if ("PO20C50014".equals(caseData.getFamilyManCaseNumber())) {
-            log.info("Removing c2 document bundle from case reference {}", caseDetails.getId());
-            data.put("c2DocumentBundle", removeC2Document(caseData.getC2DocumentBundle()));
+        List<Element<ApplicationDocument>> applicationDocuments = caseData.getDocuments();
+        for (Element<ApplicationDocument> applicationDocument : applicationDocuments) {
+            switch(applicationDocument.getValue().getDocumentType()) {
+                case CHECKLIST_DOCUMENT:
+                    convertOldDocumentToApplicationDocument(applicationDocument.getValue(),checklistDocument);
+                case THRESHOLD:
+                    convertOldDocumentToApplicationDocument(applicationDocument.getValue(),thresholdDocument);
+                case SOCIAL_WORK_STATEMENT:
+                    convertOldDocumentToApplicationDocument(applicationDocument.getValue(),socialWorkStatementDocument);
+                case SOCIAL_WORK_CHRONOLOGY:
+                    convertOldDocumentToApplicationDocument(applicationDocument.getValue(),
+                                                                            socialWorkChronologyDocument);
+                case CARE_PLAN:
+                    convertOldDocumentToApplicationDocument(applicationDocument.getValue(),socialWorkCarePlanDocument);
+                case SWET:
+                    convertOldDocumentToApplicationDocument(applicationDocument.getValue(),
+                                                                            socialWorkEvidenceTemplateDocument);
+            }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -44,8 +69,12 @@ public class MigrateCaseController {
             .build();
     }
 
-    private List<Element<C2DocumentBundle>> removeC2Document(List<Element<C2DocumentBundle>> documentBundle) {
-        documentBundle.remove(0);
-        return documentBundle;
+    private ApplicationDocument convertOldDocumentToApplicationDocument(ApplicationDocument applicationDocument,
+                                                                                    Document document) {
+        applicationDocument.setDateTimeUploaded(document.getDateTimeUploaded());
+        applicationDocument.setDocumentName(document.getTypeOfDocument().getFilename());
+        applicationDocument.setUploadedBy(document.getUploadedBy());
+
+        return applicationDocument;
     }
 }
