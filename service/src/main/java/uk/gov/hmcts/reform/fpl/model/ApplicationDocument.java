@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class ApplicationDocument {
-    private final DocumentReference document;
-    private final DocumentType documentType;
-    protected LocalDateTime dateTimeUploaded;
+    private DocumentReference document;
+    private DocumentType documentType;
+    private LocalDateTime dateTimeUploaded;
     private String uploadedBy;
     private String documentName;
     private String includedInSWET;
