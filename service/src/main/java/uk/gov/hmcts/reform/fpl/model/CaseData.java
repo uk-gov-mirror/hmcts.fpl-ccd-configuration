@@ -630,5 +630,5 @@ public class CaseData {
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
 
-    private final List<Element<ApplicationDocument>> documents;
+    private List<Element<ApplicationDocument>> documents;
 }

@@ -15,13 +15,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -57,31 +62,44 @@ public class MigrateCaseController {
         Document socialWorkChronologyDocument = caseData.getSocialWorkChronologyDocument();
         Document socialWorkCarePlanDocument = caseData.getSocialWorkCarePlanDocument();
         Document socialWorkEvidenceTemplateDocument = caseData.getSocialWorkEvidenceTemplateDocument();
-        List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments =   caseData.getOtherSocialWorkDocuments() ;
+        List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments =   caseData.getOtherSocialWorkDocuments();
 
 
         if (checklistDocument != null) {
-            convertOldDocumentsToNewApplicationDocuments(checklistDocument, DocumentType.CHECKLIST_DOCUMENT);
+            caseData.setDocuments(convertOldDocumentsToNewApplicationDocuments(checklistDocument,
+                                                                                DocumentType.CHECKLIST_DOCUMENT));
+
         }
         if (thresholdDocument != null) {
-            convertOldDocumentsToNewApplicationDocuments(thresholdDocument, DocumentType.THRESHOLD);
+            caseData.setDocuments(convertOldDocumentsToNewApplicationDocuments(thresholdDocument,
+                                                                                DocumentType.THRESHOLD));
         }
         if (socialWorkStatementDocument != null) {
-            convertOldDocumentsToNewApplicationDocuments(socialWorkStatementDocument, DocumentType.SOCIAL_WORK_STATEMENT);
+            caseData.setDocuments(convertOldDocumentsToNewApplicationDocuments(socialWorkStatementDocument,
+                                                                                DocumentType.SOCIAL_WORK_STATEMENT));
         }
         if (socialWorkChronologyDocument != null) {
-            convertOldDocumentsToNewApplicationDocuments(socialWorkChronologyDocument, DocumentType.SOCIAL_WORK_CHRONOLOGY);
+            caseData.setDocuments(convertOldDocumentsToNewApplicationDocuments(socialWorkChronologyDocument,
+                                                                                DocumentType.SOCIAL_WORK_CHRONOLOGY));
         }
         if (socialWorkCarePlanDocument != null) {
-            convertOldDocumentsToNewApplicationDocuments(socialWorkCarePlanDocument, DocumentType.CARE_PLAN);
+            caseData.setDocuments(convertOldDocumentsToNewApplicationDocuments(socialWorkCarePlanDocument,
+                                                                                DocumentType.CARE_PLAN));
         }
         if (socialWorkEvidenceTemplateDocument != null) {
-            convertOldDocumentsToNewApplicationDocuments(socialWorkEvidenceTemplateDocument, DocumentType.SWET);
+            caseData.setDocuments(convertOldDocumentsToNewApplicationDocuments(socialWorkEvidenceTemplateDocument,
+                                                                                DocumentType.SWET));
         }
+
+
 
     }
 
-    private ApplicationDocument convertOldDocumentsToNewApplicationDocuments(Document document, DocumentType documentType) {
+    private List<Element<ApplicationDocument>> convertOldDocumentsToNewApplicationDocuments(Document document,
+                                                                             DocumentType documentType) {
+        List<Element<ApplicationDocument>> caseDataDocuments = new ArrayList<>();
+        List<ApplicationDocument> applicationDocuments = new ArrayList<>();
+
         ApplicationDocument applicationDocument = new ApplicationDocument(
             document.getTypeOfDocument(),
             documentType,
@@ -89,7 +107,8 @@ public class MigrateCaseController {
             document.getUploadedBy(),
         document.getTypeOfDocument().getFilename(),
         "includedInSWET");
-        return applicationDocument;
-
+        applicationDocuments.add(applicationDocument);
+        caseDataDocuments.add(element(applicationDocument));
+        return caseDataDocuments;
     }
 }
