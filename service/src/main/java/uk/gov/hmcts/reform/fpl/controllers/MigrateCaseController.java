@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -56,6 +57,9 @@ public class MigrateCaseController {
         Document socialWorkChronologyDocument = caseData.getSocialWorkChronologyDocument();
         Document socialWorkCarePlanDocument = caseData.getSocialWorkCarePlanDocument();
         Document socialWorkEvidenceTemplateDocument = caseData.getSocialWorkEvidenceTemplateDocument();
+        List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments =   caseData.getOtherSocialWorkDocuments() ;
+
+
         if (checklistDocument != null) {
             convertOldDocumentsToNewApplicationDocuments(checklistDocument, DocumentType.CHECKLIST_DOCUMENT);
         }
@@ -78,7 +82,6 @@ public class MigrateCaseController {
     }
 
     private ApplicationDocument convertOldDocumentsToNewApplicationDocuments(Document document, DocumentType documentType) {
-
         ApplicationDocument applicationDocument = new ApplicationDocument(
             document.getTypeOfDocument(),
             documentType,
