@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
@@ -21,8 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,23 +58,20 @@ public class DocmosisDocumentGeneratorService {
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
 
-        byte[] response;
-
         try {
-            LocalDateTime start = LocalDateTime.now();
-            response = restTemplate.exchange(configuration.getUrl() + "/rs/render",
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            byte[] response = restTemplate.exchange(configuration.getUrl() + "/rs/render",
                 HttpMethod.POST, request, byte[].class).getBody();
-            LocalDateTime end = LocalDateTime.now();
+            stopWatch.stop();
 
-            log.info("Time taken to generate pdf format document: {} seconds and {} millis",
-                ChronoUnit.SECONDS.between(start, end),
-                ChronoUnit.MILLIS.between(start, end));
+            log.debug("Time taken to generate pdf format document: {} ms", stopWatch.getTotalTimeMillis());
+            return new DocmosisDocument(template.getDocumentTitle(), response);
         } catch (HttpClientErrorException.BadRequest ex) {
             log.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
             throw ex;
         }
 
-        return new DocmosisDocument(template.getDocumentTitle(), response);
     }
 
     public List<DocmosisDocument> generateDocmosisDocuments(Map<String, Object> templateData, DocmosisTemplates template) {
@@ -93,15 +89,13 @@ public class DocmosisDocumentGeneratorService {
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
 
         try {
-            LocalDateTime start = LocalDateTime.now();
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
             byte[] response = restTemplate.exchange(configuration.getUrl() + "/rs/render",
                 HttpMethod.POST, request, byte[].class).getBody();
-            LocalDateTime end = LocalDateTime.now();
+            stopWatch.stop();
 
-            log.info("Time taken to generate pdf and doc format documents: {} seconds and {} millis",
-                ChronoUnit.SECONDS.between(start, end),
-                ChronoUnit.MILLIS.between(start, end));
-
+            log.debug("Time taken to generate pdf and doc format documents: {} ms", stopWatch.getTotalTimeMillis());
             return unzipToDocmosisDocuments(response);
         } catch (HttpClientErrorException.BadRequest ex) {
             log.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
@@ -112,15 +106,13 @@ public class DocmosisDocumentGeneratorService {
     private List<DocmosisDocument> unzipToDocmosisDocuments(byte[] response) {
         List<DocmosisDocument> documents = new ArrayList<>();
 
-        try {
-            ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(response));
+        try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(response))) {
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 DocmosisDocument document = new DocmosisDocument(zipEntry.getName(), readFile(zipInputStream));
                 documents.add(document);
                 zipInputStream.closeEntry();
             }
-            zipInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
             throw new UncheckedIOException(e);
