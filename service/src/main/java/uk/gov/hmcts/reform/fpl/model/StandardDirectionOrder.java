@@ -50,10 +50,16 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     }
 
     @JsonIgnore
-    public void setOrderDocReferenceFromDocument(Document document) {
-        if (document != null) {
-            this.orderDoc = buildFromDocument(document);
-        }
+    public void setOrderDocReferenceFromDocument(List<Document> documents) {
+        documents.forEach(
+            document -> {
+                if (document.originalDocumentName.endsWith("doc") && this.orderStatus == SEALED) {
+                    this.lastUploadedOrder = buildFromDocument(document);
+                } else {
+                    this.orderDoc = buildFromDocument(document);
+                }
+            }
+        );
     }
 
     @JsonIgnore

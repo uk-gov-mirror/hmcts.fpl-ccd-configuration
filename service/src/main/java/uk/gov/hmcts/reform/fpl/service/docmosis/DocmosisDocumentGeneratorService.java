@@ -17,7 +17,17 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Service
 @Slf4j
@@ -29,6 +39,10 @@ public class DocmosisDocumentGeneratorService {
 
     public DocmosisDocument generateDocmosisDocument(DocmosisData templateData, DocmosisTemplates template) {
         return generateDocmosisDocument(templateData.toMap(mapper), template);
+    }
+
+    public List<DocmosisDocument> generateDocmosisDocuments(DocmosisData templateData, DocmosisTemplates template) {
+        return generateDocmosisDocuments(templateData.toMap(mapper), template);
     }
 
     public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData, DocmosisTemplates template) {
@@ -48,8 +62,14 @@ public class DocmosisDocumentGeneratorService {
         byte[] response;
 
         try {
+            LocalDateTime start = LocalDateTime.now();
             response = restTemplate.exchange(configuration.getUrl() + "/rs/render",
                 HttpMethod.POST, request, byte[].class).getBody();
+            LocalDateTime end = LocalDateTime.now();
+
+            log.info("Time taken to generate pdf format document: {} seconds and {} millis",
+                ChronoUnit.SECONDS.between(start, end),
+                ChronoUnit.MILLIS.between(start, end));
         } catch (HttpClientErrorException.BadRequest ex) {
             log.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
             throw ex;
@@ -57,4 +77,69 @@ public class DocmosisDocumentGeneratorService {
 
         return new DocmosisDocument(template.getDocumentTitle(), response);
     }
+
+    public List<DocmosisDocument> generateDocmosisDocuments(Map<String, Object> templateData, DocmosisTemplates template) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        DocmosisRequest requestBody = DocmosisRequest.builder()
+            .templateName(template.getTemplate())
+            .data(templateData)
+            .outputFormat("pdf;doc")
+            .outputName("IGNORED") //TODO: change file name
+            .accessKey(configuration.getAccessKey())
+            .build();
+
+        HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
+
+        try {
+            LocalDateTime start = LocalDateTime.now();
+            byte[] response = restTemplate.exchange(configuration.getUrl() + "/rs/render",
+                HttpMethod.POST, request, byte[].class).getBody();
+            LocalDateTime end = LocalDateTime.now();
+
+            log.info("Time taken to generate pdf and doc format documents: {} seconds and {} millis",
+                ChronoUnit.SECONDS.between(start, end),
+                ChronoUnit.MILLIS.between(start, end));
+
+            return unzipToDocmosisDocuments(response);
+        } catch (HttpClientErrorException.BadRequest ex) {
+            log.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
+            throw ex;
+        }
+    }
+
+    private List<DocmosisDocument> unzipToDocmosisDocuments(byte[] response) {
+        List<DocmosisDocument> documents = new ArrayList<>();
+
+        try {
+            ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(response));
+            ZipEntry zipEntry;
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                DocmosisDocument document = new DocmosisDocument(zipEntry.getName(), readFile(zipInputStream));
+                documents.add(document);
+                zipInputStream.closeEntry();
+            }
+            zipInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new UncheckedIOException(e);
+        }
+        return documents;
+    }
+
+    private byte[] readFile(ZipInputStream zipInputStream) {
+        final byte[] buffer = new byte[1024];
+        int bytesRead;
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            while ((bytesRead = zipInputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new UncheckedIOException(e);
+        }
+    }
+
 }

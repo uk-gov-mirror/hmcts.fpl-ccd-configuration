@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGeneration
 import uk.gov.hmcts.reform.fpl.service.sdo.StandardDirectionsOrderService;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -169,7 +170,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
         order.setDirectionsToEmptyList();
-        order.setOrderDocReferenceFromDocument(document);
+        order.setOrderDocReferenceFromDocument(List.of(document));
 
         caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
 
@@ -234,10 +235,10 @@ public class StandardDirectionsOrderController extends CallbackController {
             //generate sdo document
             DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(
                 updated);
-            Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+            List<Document> documents = documentService.getDocumentsFromDocmosisOrderTemplate(templateData, SDO);
 
-            //add document to order
-            order.setOrderDocReferenceFromDocument(document);
+            //add documents to order
+            order.setOrderDocReferenceFromDocument(documents);
         } else {
             StandardDirectionOrder currentOrder = caseData.getStandardDirectionOrder();
 
