@@ -71,7 +71,6 @@ public class DocmosisDocumentGeneratorService {
             log.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
             throw ex;
         }
-
     }
 
     public List<DocmosisDocument> generateDocmosisDocuments(Map<String, Object> templateData, DocmosisTemplates template) {
@@ -104,34 +103,30 @@ public class DocmosisDocumentGeneratorService {
     }
 
     private List<DocmosisDocument> unzipToDocmosisDocuments(byte[] response) {
-        List<DocmosisDocument> documents = new ArrayList<>();
-
         try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(response))) {
+            List<DocmosisDocument> documents = new ArrayList<>();
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 DocmosisDocument document = new DocmosisDocument(zipEntry.getName(), readFile(zipInputStream));
                 documents.add(document);
                 zipInputStream.closeEntry();
             }
+            return documents;
         } catch (IOException e) {
-            e.printStackTrace();
             throw new UncheckedIOException(e);
         }
-        return documents;
     }
 
     private byte[] readFile(ZipInputStream zipInputStream) {
-        final byte[] buffer = new byte[1024];
-        int bytesRead;
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            final byte[] buffer = new byte[1024];
+            int bytesRead;
             while ((bytesRead = zipInputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, bytesRead);
             }
             return outputStream.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
             throw new UncheckedIOException(e);
         }
     }
-
 }
