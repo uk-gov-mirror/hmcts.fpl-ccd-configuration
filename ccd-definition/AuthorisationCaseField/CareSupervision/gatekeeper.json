@@ -23,6 +23,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "standardDirectionOrderDoc",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allParties",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "RU"
@@ -1648,6 +1655,323 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "messageJudgeLegalAdviserLink",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsAll",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsLocalAuthority",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsRespondents",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsCafcass",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsOthers",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsCourt",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+
+
+
+
+
+
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-ASK_FOR_DISCLOSURE",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-ATTEND_HEARING",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-CONTACT_ALTERNATIVE_CARERS",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-SEND_MISSING_ANNEX",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-IDENTIFY_ALTERNATIVE_CARERS",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-SEND_TRANSLATED_DOCUMENTS",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-LODGE_BUNDLE",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-SEND_CASE_SUMMARY",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-CONSIDER_JURISDICTION",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-ARRANGE_ADVOCATES_MEETING",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-SEND_GUARDIANS_ANALYSIS",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-APPOINT_CHILDREN_GUARDIAN",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-OBJECT_TO_REQUEST_FOR_DISCLOSURE",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-ARRANGE_INTERPRETERS",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsAllLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsAllLabel2",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsLocalAuthorityLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsLocalAuthorityLabel2",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsRespondentsLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsRespondentsLabel2",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsCafcassLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsCafcassLabel2",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsOthersLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsOthersLabel2",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsCourtLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsCourtLabel2",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsFurtherDirectionsLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsSelectDirectionsLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionsEditDirectionsLabel",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirection-Custom",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoHearingDate",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hasAllocatedJudge",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoRouterWarning",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDecisionWarning",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
   }

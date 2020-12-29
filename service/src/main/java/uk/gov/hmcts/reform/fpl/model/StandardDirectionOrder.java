@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFr
 public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private final String hearingDate;
     private final String dateOfIssue;
-    private final OrderStatus orderStatus;
+    private OrderStatus orderStatus;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final LocalDate dateOfUpload;
     private final String uploader;

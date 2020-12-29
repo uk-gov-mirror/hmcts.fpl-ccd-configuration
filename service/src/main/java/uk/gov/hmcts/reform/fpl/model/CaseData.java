@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
@@ -79,6 +81,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
+import static com.fasterxml.jackson.annotation.Nulls.AS_EMPTY;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
@@ -140,20 +143,27 @@ public class CaseData {
     private final Allocation allocationDecision;
 
     private final List<Element<Direction>> allParties;
-    private final List<Element<Direction>> allPartiesCustom;
+    @JsonProperty
+    private List<Element<Direction>> allPartiesCustom;
     private final List<Element<Direction>> localAuthorityDirections;
-    private final List<Element<Direction>> localAuthorityDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> localAuthorityDirectionsCustom;
     private final List<Element<Direction>> courtDirections;
-    private final List<Element<Direction>> courtDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> courtDirectionsCustom;
     private final List<Element<Direction>> cafcassDirections;
-    private final List<Element<Direction>> cafcassDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> cafcassDirectionsCustom;
     private final List<Element<Direction>> otherPartiesDirections;
-    private final List<Element<Direction>> otherPartiesDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> otherPartiesDirectionsCustom;
     private final List<Element<Direction>> respondentDirections;
-    private final List<Element<Direction>> respondentDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> respondentDirectionsCustom;
 
     private final List<Element<Placement>> placements;
-    private final StandardDirectionOrder standardDirectionOrder;
+    @JsonProperty
+    private StandardDirectionOrder standardDirectionOrder;
     private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
 
     public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
