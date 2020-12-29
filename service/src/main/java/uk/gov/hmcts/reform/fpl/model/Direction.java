@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Direction {
-    private final String directionType;
+    private String directionType;
     private String directionText;
     private final String status;
     private DirectionAssignee assignee;

@@ -15,11 +15,13 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -38,8 +40,10 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGeneration
 import uk.gov.hmcts.reform.fpl.service.sdo.StandardDirectionsOrderService;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
@@ -84,6 +88,9 @@ public class StandardDirectionsOrderController extends CallbackController {
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         SDORoute sdoRouter = caseData.getSdoRouter();
 
+        String hearingDate = getFirstHearingStartDate(caseData);
+        data.put("sdoHearingDate", hearingDate);
+
         if (sdoRouter != null && standardDirectionOrder != null) {
             switch (sdoRouter) {
                 case UPLOAD:
@@ -126,6 +133,17 @@ public class StandardDirectionsOrderController extends CallbackController {
         return respond(caseDetails);
     }
 
+    @PostMapping("/direction-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse directionSelection(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().entrySet().removeIf(e -> e.getKey().startsWith("sdoDirection-"));
+        caseDetails.getData().putAll(standardDirectionsService.getRequestedDirections(caseData, caseDetails));
+
+        return respond(caseDetails);
+    }
+
     @PostMapping("/date-of-issue/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventIssueDate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -152,27 +170,31 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
-            caseData.getAllocatedJudge());
+        SDORoute sdoRouter = caseData.getSdoRouter();
+        if (SERVICE == sdoRouter) {
+            standardDirectionsService.addOrUpdateDirections(caseData, caseDetails);
 
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
-            .directions(commonDirectionService.combineAllDirections(caseData))
-            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
-            .build();
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
+                caseData.getAllocatedJudge());
 
-        persistHiddenValues(caseData.getFirstHearing().orElse(null), order.getDirections());
+            StandardDirectionOrder order = StandardDirectionOrder.builder()
+                .directions(commonDirectionService.combineAllDirections(caseData))
+                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+                .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+                .build();
 
-        CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
+            persistHiddenValues(caseData.getFirstHearing().orElse(null), order.getDirections());
 
-        DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
-        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+            caseData.setStandardDirectionOrder(order);
 
-        order.setDirectionsToEmptyList();
-        order.setOrderDocReferenceFromDocument(document);
+            DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(caseData);
+            Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
-        caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
+            order.setDirectionsToEmptyList();
+            order.setOrderDocReferenceFromDocument(document);
 
+            caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
+        }
         return respond(caseDetails);
     }
 
@@ -181,7 +203,6 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
-
         StandardDirectionOrder order = sdoService.buildTemporarySDO(
             caseData,
             caseDataBefore.getStandardDirectionOrder()
@@ -212,6 +233,8 @@ public class StandardDirectionsOrderController extends CallbackController {
 
             removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
+            standardDirectionsService.addOrUpdateDirections(caseData, caseDetails);
+
             //combine all directions from collections
             List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
 
@@ -229,15 +252,30 @@ public class StandardDirectionsOrderController extends CallbackController {
                 .build();
 
             //add sdo to case data for document generation
-            CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
+            caseData.setStandardDirectionOrder(order);
 
             //generate sdo document
             DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(
-                updated);
+                caseData);
             Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
             //add document to order
             order.setOrderDocReferenceFromDocument(document);
+
+            caseDetails.getData().entrySet().removeIf(e -> e.getKey().startsWith("sdoDirection-"));
+
+            caseDetails.getData().put("allParties", caseData.getAllParties());
+            caseDetails.getData().put("allPartiesCustom", caseData.getAllPartiesCustom());
+            caseDetails.getData().put("localAuthorityDirections", caseData.getLocalAuthorityDirections());
+            caseDetails.getData().put("localAuthorityDirectionsCustom", caseData.getLocalAuthorityDirectionsCustom());
+            caseDetails.getData().put("courtDirections", caseData.getCourtDirections());
+            caseDetails.getData().put("courtDirectionsCustom", caseData.getCourtDirectionsCustom());
+            caseDetails.getData().put("cafcassDirections", caseData.getCafcassDirections());
+            caseDetails.getData().put("cafcassDirectionsCustom", caseData.getCafcassDirectionsCustom());
+            caseDetails.getData().put("otherPartiesDirections", caseData.getOtherPartiesDirections());
+            caseDetails.getData().put("otherPartiesDirectionsCustom", caseData.getOtherPartiesDirectionsCustom());
+            caseDetails.getData().put("respondentDirections", caseData.getRespondentDirections());
+            caseDetails.getData().put("respondentDirectionsCustom", caseData.getRespondentDirectionsCustom());
         } else {
             StandardDirectionOrder currentOrder = caseData.getStandardDirectionOrder();
 

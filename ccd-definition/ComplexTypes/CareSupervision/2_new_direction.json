@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NewDirection",
+    "ListElementCode": "type",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "readOnly CONTAINS \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NewDirection",
+    "ListElementCode": "readOnly",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this readOnly?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type CONTAINS \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NewDirection",
+    "ListElementCode": "description",
+    "FieldType": "TextArea",
+    "ElementLabel": "Description",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "readOnly!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NewDirection",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldType": "DateTime",
+    "ElementLabel": "Due date and time",
+    "SecurityClassification": "Public"
+  }
+]

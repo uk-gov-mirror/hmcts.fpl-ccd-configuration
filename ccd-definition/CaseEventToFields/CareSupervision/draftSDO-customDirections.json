@@ -1,0 +1,25 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "sdoDirectionsFurtherDirectionsLabel",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "customDirections",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"SERVICE\" OR useServiceRoute=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "sdoDirection-Custom",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "customDirections",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1
+  }
+]

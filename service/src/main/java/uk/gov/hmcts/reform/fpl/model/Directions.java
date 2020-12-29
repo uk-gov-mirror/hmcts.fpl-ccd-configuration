@@ -36,19 +36,6 @@ public class Directions {
     private final List<Element<Direction>> otherPartiesDirectionsCustomCMO;
     private final List<Element<Direction>> courtDirectionsCustomCMO;
 
-    @JsonIgnore
-    public List<Element<Direction>> getDirectionsList() {
-        List<Element<Direction>> directions = new ArrayList<>();
-
-        ofNullable(getAllPartiesCustomCMO()).ifPresent(directions::addAll);
-        ofNullable(getLocalAuthorityDirectionsCustomCMO()).ifPresent(directions::addAll);
-        ofNullable(getRespondentDirectionsCustomCMO()).ifPresent(list -> directions.addAll(orderByRespondent(list)));
-        ofNullable(getCafcassDirectionsCustomCMO()).ifPresent(directions::addAll);
-        ofNullable(getOtherPartiesDirectionsCustomCMO()).ifPresent(list -> directions.addAll(orderByOther(list)));
-        ofNullable(getCourtDirectionsCustomCMO()).ifPresent(directions::addAll);
-
-        return directions;
-    }
 
     @JsonIgnore
     public static Map<DirectionAssignee, List<Element<Direction>>> getAssigneeToDirectionMapping(
