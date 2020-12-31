@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
@@ -39,13 +38,15 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.sdo.StandardDirectionsOrderService;
+import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -92,6 +93,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         String hearingDate = getFirstHearingStartDate(caseData);
         data.put("sdoHearingDate", hearingDate);
 
+
         data.put("hasAllocatedJudge", YesNo.from(ObjectUtils.isNotEmpty(caseData.getAllocatedJudge())).getValue());
 
         if (sdoRouter != null && standardDirectionOrder != null) {
@@ -111,7 +113,9 @@ public class StandardDirectionsOrderController extends CallbackController {
             }
         }
 
-        return respond(caseDetails);
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
     }
 
     @PostMapping("/populate-date-of-issue/mid-event")
@@ -119,6 +123,12 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
+
+        List<String> warnings = new ArrayList<>();
+
+        if (ObjectUtils.isEmpty(caseData.getAllocatedJudge())) {
+            warnings.add("No judge allocated for this case. You wont be able to seal order, but will be able to save it for later");
+        }
 
         if (caseData.getSdoRouter() == SERVICE) {
             data.put(DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(caseData.getStandardDirectionOrder()));
@@ -133,7 +143,10 @@ public class StandardDirectionsOrderController extends CallbackController {
 
         data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
 
-        return respond(caseDetails);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
     }
 
     @PostMapping("/direction-selection/mid-event")
@@ -144,6 +157,28 @@ public class StandardDirectionsOrderController extends CallbackController {
         caseDetails.getData().entrySet().removeIf(e -> e.getKey().startsWith("sdoDirection-"));
         caseDetails.getData().putAll(standardDirectionsService.getRequestedDirections(caseData, caseDetails));
 
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/allocated-judge/mid-event")
+    public AboutToStartOrSubmitCallbackResponse allocatedJudge(@RequestBody CallbackRequest request) {
+
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getAllocatedJudge() != null) {
+            JudgeAndLegalAdvisor jala = ofNullable(caseData.getJudgeAndLegalAdvisor()).orElse(JudgeAndLegalAdvisor.builder().build());
+
+            jala.setAllocatedJudgeLabel(JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+            caseDetails.getData().put("judgeAndLegalAdvisor", jala);
+            caseDetails.getData().put("hasAllocatedJudge", "No");
+        } else {
+            JudgeAndLegalAdvisor jala = ofNullable(caseData.getJudgeAndLegalAdvisor()).orElse(JudgeAndLegalAdvisor.builder().build());
+
+            jala.setAllocatedJudgeLabel(null);
+            caseDetails.getData().put("judgeAndLegalAdvisor", jala);
+            caseDetails.getData().put("hasAllocatedJudge", "No");
+        }
         return respond(caseDetails);
     }
 
@@ -174,6 +209,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         SDORoute sdoRouter = caseData.getSdoRouter();
+
         if (SERVICE == sdoRouter) {
             standardDirectionsService.addOrUpdateDirections(caseData, caseDetails);
 
@@ -196,25 +232,19 @@ public class StandardDirectionsOrderController extends CallbackController {
             order.setDirectionsToEmptyList();
             order.setOrderDocReferenceFromDocument(document);
 
-            if(ObjectUtils.isNotEmpty(caseData.getAllocatedJudge())){
+            if (ObjectUtils.isNotEmpty(caseData.getAllocatedJudge())) {
                 order.setCanBeSealed("Yes");
-            }else {
+            } else {
                 order.setCanBeSealed("No");
                 order.setOrderStatus(DRAFT);
             }
             order.setCanBeSealed(YesNo.from(ObjectUtils.isNotEmpty(caseData.getAllocatedJudge())).getValue());
 
             caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
-//            if (ObjectUtils.isEmpty(caseData.getAllocatedJudge())) {
-//                caseDetails.getData().put("hasAllocatedJudge2", "No");
-//                caseDetails.getData().put("hasAllocatedJudge", "No");
-//                caseDetails.getData().put("standardDirectionOrderDoc", order.getOrderDoc());
-//            } else {
-//                caseDetails.getData().put("hasAllocatedJudge2", "Yes");
-//                caseDetails.getData().put("hasAllocatedJudge", "Yes");
-//            }
         }
-        return respond(caseDetails);
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
     }
 
     @PostMapping("/upload-route/mid-event")
@@ -239,7 +269,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
 
-        if(caseData.getStandardDirectionOrder()==null){
+        if (caseData.getStandardDirectionOrder() == null) {
             caseData.setStandardDirectionOrder(StandardDirectionOrder.builder()
 
                 .build());
@@ -272,7 +302,7 @@ public class StandardDirectionsOrderController extends CallbackController {
 
             order = StandardDirectionOrder.builder()
                 .directions(commonDirectionService.removeUnnecessaryDirections(combinedDirections))
-                .orderStatus(Optional.ofNullable(caseData.getStandardDirectionOrder()).map(x -> x.getOrderStatus()).orElse(DRAFT))
+                .orderStatus(ofNullable(caseData.getStandardDirectionOrder()).map(x -> x.getOrderStatus()).orElse(DRAFT))
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build();
@@ -317,7 +347,9 @@ public class StandardDirectionsOrderController extends CallbackController {
             "replacementSDO",
             "useServiceRoute",
             "useUploadRoute",
-            "noticeOfProceedings"
+            "noticeOfProceedings",
+            "hasAllocatedJudge",
+            "addAllocatedJudge"
         );
 
         if (order.isSealed()) {
