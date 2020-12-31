@@ -17,6 +17,6 @@
     "ListElementCode": "orderStatus",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "standardDirectionOrder.orderDoc!=\"SHOW ME\""
+    "FieldShowCondition": "standardDirectionOrder.orderDoc!=\"SHOW ME\" AND standardDirectionOrder.canBeSealed = \"Yes\""
   }
 ]

@@ -12,7 +12,8 @@
     "PageShowCondition": "useServiceRoute=\"\" AND useUploadRoute=\"\"",
     "FieldShowCondition": "sdoRouter = \"DO NOT SHOW\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/populate-date-of-issue/mid-event",
-    "Comment": "mid event required because CCD/ExUI removes date of issue if you select upload route then move to service route"
+    "Comment": "mid event required because CCD/ExUI removes date of issue if you select upload route then move to service route",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -143,24 +144,10 @@
     "CaseFieldID": "standardDirectionOrder",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
-    "PageID": "documentReview2",
+    "PageID": "documentReview",
     "CaseEventFieldLabel": " ",
-    "PageDisplayOrder": 13,
-    "PageColumnNumber": 1,
-    "FieldShowCondition": "hasAllocatedJudge = \"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "draftSDO",
-    "CaseFieldID": "standardDirectionOrderDoc",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "READONLY",
-    "PageID": "documentReview2",
-    "CaseEventFieldLabel": "Review document",
     "PageDisplayOrder": 14,
-    "PageColumnNumber": 1,
-    "FieldShowCondition": "hasAllocatedJudge != \"Yes\""
+    "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",
@@ -169,11 +156,11 @@
     "CaseFieldID": "sdoDecisionWarning",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
-    "PageID": "documentReview2",
+    "PageID": "documentReview",
     "CaseEventFieldLabel": "<div class=\"panel panel-border-wide\">This order cannot be sealed as there is no allocated judge for this case. You can continue and save this order as draft. Once allocated judge is added then you can seal saved draft.</div>",
     "PageDisplayOrder": 14,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "hasAllocatedJudge != \"Yes\""
+    "FieldShowCondition": "standardDirectionOrder.canBeSealed = \"No\""
   },
   {
     "LiveFrom": "01/01/2017",

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
@@ -195,8 +196,23 @@ public class StandardDirectionsOrderController extends CallbackController {
             order.setDirectionsToEmptyList();
             order.setOrderDocReferenceFromDocument(document);
 
+            if(ObjectUtils.isNotEmpty(caseData.getAllocatedJudge())){
+                order.setCanBeSealed("Yes");
+            }else {
+                order.setCanBeSealed("No");
+                order.setOrderStatus(DRAFT);
+            }
+            order.setCanBeSealed(YesNo.from(ObjectUtils.isNotEmpty(caseData.getAllocatedJudge())).getValue());
+
             caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
-            caseDetails.getData().put("standardDirectionOrderDoc", order.getOrderDoc());
+//            if (ObjectUtils.isEmpty(caseData.getAllocatedJudge())) {
+//                caseDetails.getData().put("hasAllocatedJudge2", "No");
+//                caseDetails.getData().put("hasAllocatedJudge", "No");
+//                caseDetails.getData().put("standardDirectionOrderDoc", order.getOrderDoc());
+//            } else {
+//                caseDetails.getData().put("hasAllocatedJudge2", "Yes");
+//                caseDetails.getData().put("hasAllocatedJudge", "Yes");
+//            }
         }
         return respond(caseDetails);
     }
@@ -220,9 +236,14 @@ public class StandardDirectionsOrderController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-:        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = getCaseData(caseDetails);
 
-        //caseData.getStandardDirectionOrder().setOrderStatus(ObjectUtils.defaultIfNull(caseData.getStandardDirectionOrder().getOrderStatus(), DRAFT));
+
+        if(caseData.getStandardDirectionOrder()==null){
+            caseData.setStandardDirectionOrder(StandardDirectionOrder.builder()
+
+                .build());
+        }
 
         List<String> errors = orderValidationService.validate(caseData);
         if (!errors.isEmpty()) {
