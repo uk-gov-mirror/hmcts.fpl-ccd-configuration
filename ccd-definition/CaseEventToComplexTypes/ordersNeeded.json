@@ -1,0 +1,119 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "orderType",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "emergencyProtectionOrderLabel",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "epoType",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "emergencyProtectionOrders",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "emergencyProtectionOrderDetails",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "emergencyProtectionOrderDirections",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "excluded",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "emergencyProtectionOrderDirectionDetails",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "otherOrderLabel",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "otherOrder",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "directionLabel",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "directions",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "directionDetails",
+    "FieldDisplayOrder": 13,
+    "DisplayContext": "OPTIONAL"
+  }
+]
