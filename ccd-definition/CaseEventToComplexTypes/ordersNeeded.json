@@ -31,16 +31,16 @@
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
-    "ListElementCode": "emergencyProtectionOrders",
+    "ListElementCode": "address",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
-    "ListElementCode": "emergencyProtectionOrderDetails",
+    "ListElementCode": "emergencyProtectionOrders",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL"
   },
@@ -49,7 +49,7 @@
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
-    "ListElementCode": "emergencyProtectionOrderDirections",
+    "ListElementCode": "emergencyProtectionOrderDetails",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
@@ -58,8 +58,17 @@
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
-    "ListElementCode": "excluded",
+    "ListElementCode": "emergencyProtectionOrderDirections",
     "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "excluded",
+    "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -68,7 +77,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "emergencyProtectionOrderDirectionDetails",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -77,7 +86,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "otherOrderLabel",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "READONLY"
   },
   {
@@ -86,7 +95,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "otherOrder",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 11,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -95,7 +104,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "directionLabel",
-    "FieldDisplayOrder": 11,
+    "FieldDisplayOrder": 12,
     "DisplayContext": "READONLY"
   },
   {
@@ -104,7 +113,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "directions",
-    "FieldDisplayOrder": 12,
+    "FieldDisplayOrder": 13,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -113,7 +122,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "directionDetails",
-    "FieldDisplayOrder": 13,
+    "FieldDisplayOrder": 14,
     "DisplayContext": "OPTIONAL"
   }
 ]
