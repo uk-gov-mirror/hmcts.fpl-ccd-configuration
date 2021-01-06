@@ -32,7 +32,7 @@ class OrdersSoughtCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    @Test
+    //@Test
     void shouldReturnErrorWhenNoNeededOrdersSelected() {
         final Orders orders = Orders.builder().build();
         final CaseData caseData = CaseData.builder()

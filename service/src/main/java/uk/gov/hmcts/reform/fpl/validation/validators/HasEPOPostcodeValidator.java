@@ -12,15 +12,15 @@ import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 
-public class HasEPOPostcodeValidator implements ConstraintValidator<uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOPostcode, Orders> {
+public class HasEPOPostcodeValidator implements
+                            ConstraintValidator<uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOPostcode, Orders> {
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
-        if(orderContainsEPO(value.getOrderType()) && epoIsPreventRemoval(value)) {
-           if(isEmpty(value.getAddress().getPostcode())) {
-               return false;
-           }
+        if (orderContainsEPO(value.getOrderType()) && epoIsPreventRemoval(value)) {
+            if (isEmpty(value.getAddress().getPostcode())) {
+                return false;
+            }
         }
-
         return true;
     }
 

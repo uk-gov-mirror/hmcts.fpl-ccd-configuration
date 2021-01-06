@@ -9,17 +9,18 @@ import static java.util.Objects.isNull;
 import static org.xhtmlrenderer.util.Util.isNullOrEmpty;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.EXCLUSION_REQUIREMENT;
 
-public class HasEnteredExcludedValidator implements ConstraintValidator<uk.gov.hmcts.reform.fpl.validation.interfaces.HasEnteredExcluded, Orders> {
+public class HasEnteredExcludedValidator implements
+                        ConstraintValidator<uk.gov.hmcts.reform.fpl.validation.interfaces.HasEnteredExcluded, Orders> {
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
-        if(orderDirectionsContainExclusion(value) && isNullOrEmpty(value.getExcluded())) {
+        if (orderDirectionsContainExclusion(value) && isNullOrEmpty(value.getExcluded())) {
             return false;
         }
         return true;
     }
 
     private boolean orderDirectionsContainExclusion(Orders orders) {
-        if(!isNull(orders.getEmergencyProtectionOrderDirections()) && orders.getEmergencyProtectionOrderDirections()
+        if (!isNull(orders.getEmergencyProtectionOrderDirections()) && orders.getEmergencyProtectionOrderDirections()
             .contains(EXCLUSION_REQUIREMENT)) {
             return true;
         }

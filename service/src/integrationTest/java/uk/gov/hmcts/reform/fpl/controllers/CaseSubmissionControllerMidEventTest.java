@@ -13,7 +13,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -85,12 +84,5 @@ class CaseSubmissionControllerMidEventTest extends AbstractControllerTest {
             "In the allocation proposal section:",
             "• Add the allocation proposal"
         );
-    }
-
-    @Test
-    void shouldReturnNoErrorsWhenMandatoryFieldsAreProvidedInCaseData() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest());
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 }

@@ -10,10 +10,11 @@ import javax.validation.ConstraintValidatorContext;
 import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 
-public class HasEPOTypeValidator implements ConstraintValidator<uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOType, Orders> {
+public class HasEPOTypeValidator implements
+                                ConstraintValidator<uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOType, Orders> {
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
-        if(orderContainsEPO(value.getOrderType()) && isNull(value.getEpoType())) {
+        if (orderContainsEPO(value.getOrderType()) && isNull(value.getEpoType())) {
             return false;
         }
         return true;
