@@ -28,6 +28,17 @@ public class DocumentsListRenderer {
         this.caseUrlService = caseUrlService;
     }
 
+    public String renderSearchResults(List<DocumentView> documents) {
+        final List<String> lines = new LinkedList<>();
+        lines.add("<div>");
+        lines.add("<h1>Found "+documents.size()+" document(s)</h1>");
+        for (DocumentView documentBundle : documents) {
+            lines.add(render(documentBundle));
+        }
+        lines.add("</div>");
+        return String.join("\n\n", lines);
+    }
+
     //TODO consider templating solution like mustache
     public String render(List<DocumentBundleView> documents) {
         final List<String> lines = new LinkedList<>();
