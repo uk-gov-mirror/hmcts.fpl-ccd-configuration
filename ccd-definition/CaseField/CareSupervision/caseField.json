@@ -1333,5 +1333,24 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Generic YesOrNo to aid with redirect on refresh within multi paged events"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "testCaseField",
+    "Label": "Test case field (TextArea)",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "testCollection",
+    "Label": "Test collection",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CaseNote",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
