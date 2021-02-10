@@ -43,6 +43,9 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
+        caseDetails.getData().put("hearingOrdersBundlesDrafts",
+            approveDraftOrdersService.migrateDraftCMOsToHearingBundles(caseData));
+
         caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
         return respond(caseDetails);
@@ -53,8 +56,11 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
+        //reconstruct hearing draft orders bundles
+        caseDetails.getData().put("hearingOrdersBundlesDrafts",
+            approveDraftOrdersService.buildHearingOrderBundles(caseData));
 
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
         caseDetails.getData().putAll(approveDraftOrdersService.populateDraftOrdersData(caseData));
 
         if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
@@ -69,6 +75,11 @@ public class ApproveDraftOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse validateReviewDecision(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+
+        //reconstruct hearing draft orders bundles
+        caseDetails.getData().put("hearingOrdersBundlesDrafts",
+            approveDraftOrdersService.buildHearingOrderBundles(caseData));
+
         Map<String, Object> data = caseDetails.getData();
 
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
@@ -80,6 +91,11 @@ public class ApproveDraftOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+
+        //reconstruct hearing draft orders bundles
+        caseDetails.getData().put("hearingOrdersBundlesDrafts",
+            approveDraftOrdersService.buildHearingOrderBundles(caseData));
+
         Map<String, Object> data = caseDetails.getData();
 
         // reset ordersToBeSent in the notifications

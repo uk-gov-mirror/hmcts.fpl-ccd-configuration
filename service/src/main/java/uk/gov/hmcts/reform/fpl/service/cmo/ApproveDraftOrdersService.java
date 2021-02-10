@@ -20,16 +20,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -155,12 +162,14 @@ public class ApproveDraftOrdersService {
                         cmo, cmoReviewDecision.getChangesRequestedByJudge());
                 }
 
+                selectedOrdersBundle.getValue().getOrders().remove(cmo);
                 caseData.getDraftUploadedCMOs().remove(cmo);
                 updateHearingCMO(caseData, cmo.getId());
+                updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
 
                 data.put("hearingDetails", caseData.getHearingDetails());
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
-                data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
+                data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
 
                 data.put(ORDERS_TO_BE_SENT, newArrayList(reviewedOrder));
             }
@@ -262,4 +271,62 @@ public class ApproveDraftOrdersService {
         }
         return currentState;
     }
+
+    public List<Element<HearingOrdersBundle>> migrateDraftCMOsToHearingBundles(CaseData caseData) {
+        List<Element<HearingOrdersBundle>> hearingOrdersBundles = defaultIfNull(
+            caseData.getHearingOrdersBundlesDrafts(), new ArrayList<>());
+        List<Element<HearingOrder>> cmoDrafts = caseData.getDraftUploadedCMOs();
+
+        List<UUID> cmoDraftsIds = cmoDrafts.stream().map(Element::getId).collect(Collectors.toUnmodifiableList());
+        hearingOrdersBundles.forEach(bundle -> bundle.getValue().getOrders()
+            .removeIf(draft -> cmoDraftsIds.contains(draft.getId())));
+
+        // Set id value in the hearing bundle as the element id value is reset between the callbacks
+        List<Element<HearingOrdersBundle>> updatedHearingBundles = hearingOrdersBundles.stream()
+            .map(bundle -> element(bundle.getId(), bundle.getValue().toBuilder().id(bundle.getId()).build()))
+            .collect(Collectors.toList());
+
+        cmoDrafts.forEach(draftElement -> {
+
+            Optional<Element<HearingBooking>> hearingOptional = caseData.getHearingLinkedToCMO(draftElement.getId());
+            hearingOptional.ifPresent(hearingElement -> {
+                String title = draftElement.getValue().getType() == AGREED_CMO ? "Agreed CMO discussed at hearing"
+                    : "Draft CMO from advocates' meeting";
+
+                draftElement.getValue().toBuilder()
+                    .title(defaultIfNull(draftElement.getValue().getTitle(), title))
+                    .build();
+
+                Optional<Element<HearingOrdersBundle>> bundle = updatedHearingBundles.stream()
+                    .filter(b -> Objects.equals(b.getValue().getHearingId(), hearingElement.getId()))
+                    .findFirst();
+
+                if (bundle.isEmpty()) {
+                    UUID bundleId = UUID.randomUUID();
+                    updatedHearingBundles.add(element(bundleId, HearingOrdersBundle.builder()
+                        .id(bundleId)
+                        .build()
+                        .updateHearing(hearingElement.getId(), hearingElement.getValue())
+                        .updateOrders(List.of(draftElement),
+                            draftElement.getValue().getStatus() == DRAFT ? DRAFT_CMO : AGREED_CMO)));
+                } else {
+                    bundle.get().getValue().getOrders().add(draftElement);
+                }
+            });
+        });
+
+        updatedHearingBundles.removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));
+        caseData.setHearingOrdersBundlesDrafts(updatedHearingBundles);
+        return updatedHearingBundles;
+    }
+
+    public List<Element<HearingOrdersBundle>> buildHearingOrderBundles(CaseData caseData) {
+        List<Element<HearingOrdersBundle>> updatedHearingOrderBundles = unwrapElements(caseData.getHearingOrdersBundlesDrafts())
+            .stream().map(orderBundle -> element(orderBundle.getId(), orderBundle))
+            .collect(toList());
+
+        caseData.setHearingOrdersBundlesDrafts(updatedHearingOrderBundles);
+        return updatedHearingOrderBundles;
+    }
+
 }

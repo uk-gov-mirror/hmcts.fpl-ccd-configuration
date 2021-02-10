@@ -50,7 +50,6 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -91,7 +90,9 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
 
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
-            .hearingDetails(emptyList())
+            .hearingDetails(List.of(element(HearingBooking.builder()
+                .type(HearingType.CASE_MANAGEMENT).startDate(now().plusDays(3))
+                .caseManagementOrderId(cmoElement.getId()).build())))
             .draftUploadedCMOs(newArrayList(cmoElement))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -341,7 +342,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
 
     private HearingBooking hearing(UUID cmoId) {
         return HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
+            .type(HearingType.CASE_MANAGEMENT)
             .startDate(LocalDateTime.now())
             .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor())
             .caseManagementOrderId(cmoId)

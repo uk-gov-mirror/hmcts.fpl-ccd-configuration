@@ -32,7 +32,7 @@ public class DraftOrdersBundleHearingSelector {
 
         UUID selectedHearingDraftOrdersBundleCode = getSelectedCMOId(caseData.getCmoToReviewList());
         return ordersBundleReadyForApproval.stream()
-            .filter(element -> element.getId().equals(selectedHearingDraftOrdersBundleCode))
+            .filter(element -> selectedHearingDraftOrdersBundleCode.equals(element.getId()))
             .findFirst()
             .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
                 "Could not find hearing draft orders bundle with id " + selectedHearingDraftOrdersBundleCode));

@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -68,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.EMPTY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
@@ -128,8 +130,10 @@ class ApproveDraftOrdersServiceTest {
         Element<HearingOrdersBundle> hearingOrdersBundle1 = element(
             HearingOrdersBundle.builder().orders(newArrayList(agreedCMO(hearing1))).build());
 
+        Element<HearingOrdersBundle> hearingOrdersBundle2 = element(
+            HearingOrdersBundle.builder().orders(newArrayList(agreedCMO(hearing2))).build());
         List<Element<HearingOrdersBundle>> hearingOrderBundlesDrafts = List.of(hearingOrdersBundle1,
-            element(HearingOrdersBundle.builder().orders(newArrayList(agreedCMO(hearing2))).build())
+            hearingOrdersBundle2
         );
 
         CaseData caseData = CaseData.builder()
@@ -348,9 +352,6 @@ class ApproveDraftOrdersServiceTest {
             "draftUploadedCMOs", emptyList(),
             "hearingOrdersBundlesDrafts", emptyList()
         );
-
-        when(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class)))
-            .thenReturn(emptyList());
 
         when(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO))
             .thenReturn(element(agreedCMO.getId(), expectedCmo));
@@ -615,6 +616,108 @@ class ApproveDraftOrdersServiceTest {
             () -> underTest.getLatestSealedCMO(caseData));
     }
 
+    @Test
+    void shouldAddUploadDraftCMOsToExistingHearingOrderBundles() {
+        Element<HearingOrder> agreedCMO1 = agreedCMO(hearing1);
+        Element<HearingOrder> agreedCMO2 = agreedCMO(hearing2);
+        Element<HearingOrder> blankOrder = buildBlankOrder("Draft C21 order", hearing2);
+
+        Element<HearingBooking> hearingBooking1 = element(UUID.randomUUID(),
+            buildHearing(now().plusDays(2), agreedCMO2.getId()));
+        Element<HearingBooking> hearingBooking2 = element(UUID.randomUUID(), buildHearing(now().plusDays(3)));
+
+        Element<HearingOrdersBundle> selectedHearingBundle =
+            buildDraftOrdersBundle(hearing1, newArrayList(agreedCMO1), hearingBooking1);
+        Element<HearingOrdersBundle> hearingBundle2 =
+            buildDraftOrdersBundle(hearing2, newArrayList(blankOrder), hearingBooking2);
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(newArrayList(hearingBooking1, hearingBooking2))
+            .draftUploadedCMOs(newArrayList(agreedCMO2))
+            .hearingOrdersBundlesDrafts(newArrayList(selectedHearingBundle, hearingBundle2))
+            .build();
+
+        List<Element<HearingOrdersBundle>> migratedBundles = underTest.migrateDraftCMOsToHearingBundles(caseData);
+
+        assertThat(unwrapElements(migratedBundles))
+            .containsExactlyInAnyOrder(
+                buildDraftOrdersBundle(hearing1, newArrayList(agreedCMO1, agreedCMO2), hearingBooking1).getValue(),
+                hearingBundle2.getValue());
+    }
+
+    @Test
+    void shouldAddNewHearingBundleWithUploadDraftCMOs() {
+        Element<HearingOrder> agreedCMO1 = agreedCMO(hearing1);
+        Element<HearingOrder> agreedCMO2 = agreedCMO(hearing2);
+
+        Element<HearingBooking> hearingBooking1 = element(UUID.randomUUID(), buildHearing(now().plusDays(3)));
+        Element<HearingBooking> hearingBooking2 = element(UUID.randomUUID(),
+            buildHearing(now().plusDays(2), agreedCMO2.getId()));
+
+        Element<HearingOrdersBundle> hearingOrderBundle =
+            buildDraftOrdersBundle(hearing1, newArrayList(agreedCMO1), hearingBooking1);
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(newArrayList(hearingBooking1, hearingBooking2))
+            .draftUploadedCMOs(newArrayList(agreedCMO2))
+            .hearingOrdersBundlesDrafts(newArrayList(hearingOrderBundle))
+            .build();
+
+        List<Element<HearingOrdersBundle>> migratedBundles = underTest.migrateDraftCMOsToHearingBundles(caseData);
+
+        HearingOrdersBundle expectedNewHearingBundle = HearingOrdersBundle.builder()
+            .hearingId(hearingBooking2.getId())
+            .hearingName(hearingBooking2.getValue().toLabel())
+            .orders(newArrayList(agreedCMO2))
+            .judgeTitleAndName("").build();
+
+        assertThat(unwrapElements(migratedBundles))
+            .containsExactlyInAnyOrder(hearingOrderBundle.getValue(), expectedNewHearingBundle);
+    }
+
+    @Test
+    void shouldRemoveDuplicateCMOsWhenMigratingUploadDraftCMOsToHearingOrderBundles() {
+        Element<HearingOrder> agreedCMO = agreedCMO(hearing1);
+
+        Element<HearingBooking> hearingBooking1 = element(UUID.randomUUID(),
+            buildHearing(now().plusDays(2), agreedCMO.getId()));
+
+        Element<HearingOrdersBundle> hearingBundle1 =
+            buildDraftOrdersBundle(hearing1, newArrayList(agreedCMO), hearingBooking1);
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(agreedCMO))
+            .hearingDetails(newArrayList(hearingBooking1))
+            .hearingOrdersBundlesDrafts(newArrayList(hearingBundle1))
+            .build();
+
+        List<Element<HearingOrdersBundle>> migratedBundles = underTest.migrateDraftCMOsToHearingBundles(caseData);
+
+        assertThat(unwrapElements(migratedBundles)).containsExactlyInAnyOrder(hearingBundle1.getValue());
+    }
+
+    @Test
+    void shouldReturnHearingBundlesWithUploadDraftCMOsWhenNoHearingOrderBundlesExist() {
+        Element<HearingOrder> agreedCMO = agreedCMO(hearing1);
+
+        Element<HearingBooking> hearingBooking1 = element(UUID.randomUUID(),
+            buildHearing(now().plusDays(2), agreedCMO.getId()));
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(agreedCMO))
+            .hearingDetails(newArrayList(hearingBooking1))
+            .build();
+
+        List<Element<HearingOrdersBundle>> migratedBundles = underTest.migrateDraftCMOsToHearingBundles(caseData);
+
+        assertThat(unwrapElements(migratedBundles)).containsExactlyInAnyOrder(
+            HearingOrdersBundle.builder().hearingId(hearingBooking1.getId())
+                .hearingName(hearingBooking1.getValue().toLabel())
+                .orders(newArrayList(agreedCMO))
+                .judgeTitleAndName("")
+                .build());
+    }
+
     private static Element<HearingOrder> draftCMO(String hearing) {
         return buildCMO(hearing, DRAFT);
     }
@@ -646,9 +749,16 @@ class ApproveDraftOrdersServiceTest {
 
     private static Element<HearingOrdersBundle> buildDraftOrdersBundle(
         String hearing, List<Element<HearingOrder>> draftOrders) {
+        return buildDraftOrdersBundle(hearing, draftOrders, null);
+    }
+
+    private static Element<HearingOrdersBundle> buildDraftOrdersBundle(
+        String hearing, List<Element<HearingOrder>> draftOrders, Element<HearingBooking> hearingElement) {
+
         return element(HearingOrdersBundle.builder()
-            .hearingName(hearing)
+            .hearingName(hearingElement != null ? hearingElement.getValue().toLabel() : hearing)
             .orders(draftOrders)
+            .hearingId(hearingElement != null ? hearingElement.getId() : null)
             .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 
@@ -701,6 +811,18 @@ class ApproveDraftOrdersServiceTest {
             .judgeTitleAndName("Her Honour Judge Judy")
             .status(APPROVED)
             .type(AGREED_CMO)
+            .build();
+    }
+
+    private HearingBooking buildHearing(LocalDateTime date) {
+        return buildHearing(date, null);
+    }
+
+    private HearingBooking buildHearing(LocalDateTime date, UUID cmoId) {
+        return HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(date)
+            .caseManagementOrderId(cmoId)
             .build();
     }
 }
