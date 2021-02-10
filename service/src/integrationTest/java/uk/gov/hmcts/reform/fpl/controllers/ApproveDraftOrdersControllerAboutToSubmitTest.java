@@ -314,9 +314,10 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
     }
 
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(
-        UUID hearingOrdersBundle1, List<Element<HearingOrder>> orders) {
-        return element(hearingOrdersBundle1,
+        UUID hearingOrdersBundleId, List<Element<HearingOrder>> orders) {
+        return element(hearingOrdersBundleId,
             HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
+                .id(hearingOrdersBundleId)
                 .orders(orders)
                 .hearingName(hearing).build());
     }

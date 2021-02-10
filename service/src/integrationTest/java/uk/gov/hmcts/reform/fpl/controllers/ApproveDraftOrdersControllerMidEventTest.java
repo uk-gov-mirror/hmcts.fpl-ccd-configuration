@@ -122,9 +122,10 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractControllerTest {
     }
 
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(
-        UUID hearingOrdersBundle1, String hearing, List<Element<HearingOrder>> orders) {
-        return element(hearingOrdersBundle1,
+        UUID hearingOrdersBundleId, String hearing, List<Element<HearingOrder>> orders) {
+        return element(hearingOrdersBundleId,
             HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
+                .id(hearingOrdersBundleId)
                 .orders(orders)
                 .hearingName(hearing).build());
     }

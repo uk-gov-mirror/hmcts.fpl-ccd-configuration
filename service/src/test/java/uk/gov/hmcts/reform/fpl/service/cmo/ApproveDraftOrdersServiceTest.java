@@ -44,6 +44,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.util.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -622,14 +623,17 @@ class ApproveDraftOrdersServiceTest {
         Element<HearingOrder> agreedCMO2 = agreedCMO(hearing2);
         Element<HearingOrder> blankOrder = buildBlankOrder("Draft C21 order", hearing2);
 
+        UUID hearingBundleId1 = UUID.randomUUID();
+        UUID hearingBundleId2 = UUID.randomUUID();
+
         Element<HearingBooking> hearingBooking1 = element(UUID.randomUUID(),
             buildHearing(now().plusDays(2), agreedCMO2.getId()));
         Element<HearingBooking> hearingBooking2 = element(UUID.randomUUID(), buildHearing(now().plusDays(3)));
 
         Element<HearingOrdersBundle> selectedHearingBundle =
-            buildDraftOrdersBundle(hearing1, newArrayList(agreedCMO1), hearingBooking1);
+            buildDraftOrdersBundle(hearingBundleId1, hearing1, newArrayList(agreedCMO1), hearingBooking1);
         Element<HearingOrdersBundle> hearingBundle2 =
-            buildDraftOrdersBundle(hearing2, newArrayList(blankOrder), hearingBooking2);
+            buildDraftOrdersBundle(hearingBundleId2, hearing2, newArrayList(blankOrder), hearingBooking2);
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(newArrayList(hearingBooking1, hearingBooking2))
@@ -640,8 +644,8 @@ class ApproveDraftOrdersServiceTest {
         List<Element<HearingOrdersBundle>> migratedBundles = underTest.migrateDraftCMOsToHearingBundles(caseData);
 
         assertThat(unwrapElements(migratedBundles))
-            .containsExactlyInAnyOrder(
-                buildDraftOrdersBundle(hearing1, newArrayList(agreedCMO1, agreedCMO2), hearingBooking1).getValue(),
+            .containsExactlyInAnyOrder(buildDraftOrdersBundle(
+                hearingBundleId1, hearing1, newArrayList(agreedCMO1, agreedCMO2), hearingBooking1).getValue(),
                 hearingBundle2.getValue());
     }
 
@@ -650,7 +654,8 @@ class ApproveDraftOrdersServiceTest {
         Element<HearingOrder> agreedCMO1 = agreedCMO(hearing1);
         Element<HearingOrder> agreedCMO2 = agreedCMO(hearing2);
 
-        Element<HearingBooking> hearingBooking1 = element(UUID.randomUUID(), buildHearing(now().plusDays(3)));
+        Element<HearingBooking> hearingBooking1 = element(UUID.randomUUID(),
+            buildHearing(now().plusDays(3), agreedCMO1.getId()));
         Element<HearingBooking> hearingBooking2 = element(UUID.randomUUID(),
             buildHearing(now().plusDays(2), agreedCMO2.getId()));
 
@@ -665,14 +670,10 @@ class ApproveDraftOrdersServiceTest {
 
         List<Element<HearingOrdersBundle>> migratedBundles = underTest.migrateDraftCMOsToHearingBundles(caseData);
 
-        HearingOrdersBundle expectedNewHearingBundle = HearingOrdersBundle.builder()
-            .hearingId(hearingBooking2.getId())
-            .hearingName(hearingBooking2.getValue().toLabel())
-            .orders(newArrayList(agreedCMO2))
-            .judgeTitleAndName("").build();
-
-        assertThat(unwrapElements(migratedBundles))
-            .containsExactlyInAnyOrder(hearingOrderBundle.getValue(), expectedNewHearingBundle);
+        assertThat(unwrapElements(migratedBundles)).extracting("hearingId", "hearingName", "orders")
+            .containsExactlyInAnyOrder(
+                tuple(hearingBooking1.getId(), hearingBooking1.getValue().toLabel(), newArrayList(agreedCMO1)),
+                tuple(hearingBooking2.getId(), hearingBooking2.getValue().toLabel(), newArrayList(agreedCMO2)));
     }
 
     @Test
@@ -710,12 +711,28 @@ class ApproveDraftOrdersServiceTest {
 
         List<Element<HearingOrdersBundle>> migratedBundles = underTest.migrateDraftCMOsToHearingBundles(caseData);
 
-        assertThat(unwrapElements(migratedBundles)).containsExactlyInAnyOrder(
-            HearingOrdersBundle.builder().hearingId(hearingBooking1.getId())
-                .hearingName(hearingBooking1.getValue().toLabel())
-                .orders(newArrayList(agreedCMO))
-                .judgeTitleAndName("")
-                .build());
+        assertThat(unwrapElements(migratedBundles))
+            .extracting("hearingId", "hearingName", "orders")
+            .containsExactlyInAnyOrder(
+                tuple(hearingBooking1.getId(), hearingBooking1.getValue().toLabel(), newArrayList(agreedCMO)));
+    }
+
+    @Test
+    void shouldPopulateHearingOrderBundlesWithId() {
+        Element<HearingOrder> agreedCMO = agreedCMO(hearing1);
+        Element<HearingOrder> draftOrder = buildBlankOrder("title1", hearing1);
+
+        Element<HearingOrdersBundle> hearingBundle1 = buildDraftOrdersBundle(hearing1, newArrayList(agreedCMO));
+        Element<HearingOrdersBundle> hearingBundle2 = buildDraftOrdersBundle(hearing2, newArrayList(draftOrder));
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(
+                newArrayList(element(null, hearingBundle1.getValue()), element(null, hearingBundle2.getValue())))
+            .build();
+
+        List<Element<HearingOrdersBundle>> updatedBundles = underTest.buildHearingOrderBundles(caseData);
+
+        assertThat(updatedBundles).containsExactlyInAnyOrder(hearingBundle1, hearingBundle2);
     }
 
     private static Element<HearingOrder> draftCMO(String hearing) {
@@ -754,9 +771,16 @@ class ApproveDraftOrdersServiceTest {
 
     private static Element<HearingOrdersBundle> buildDraftOrdersBundle(
         String hearing, List<Element<HearingOrder>> draftOrders, Element<HearingBooking> hearingElement) {
+        return buildDraftOrdersBundle(UUID.randomUUID(), hearing, draftOrders, hearingElement);
+    }
 
-        return element(HearingOrdersBundle.builder()
+    private static Element<HearingOrdersBundle> buildDraftOrdersBundle(
+        UUID bundleId, String hearing, List<Element<HearingOrder>> draftOrders,
+        Element<HearingBooking> hearingElement) {
+
+        return element(bundleId, HearingOrdersBundle.builder()
             .hearingName(hearingElement != null ? hearingElement.getValue().toLabel() : hearing)
+            .id(bundleId)
             .orders(draftOrders)
             .hearingId(hearingElement != null ? hearingElement.getId() : null)
             .judgeTitleAndName("Her Honour Judge Judy").build());
