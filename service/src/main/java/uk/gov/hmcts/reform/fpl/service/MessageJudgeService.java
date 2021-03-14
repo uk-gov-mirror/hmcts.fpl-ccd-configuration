@@ -50,7 +50,7 @@ public class MessageJudgeService {
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        if (hasC2Documents(caseData)) {
+        if (caseData.hasC2DocumentBundle()) {
             data.put("hasC2Applications", YES.getValue());
             data.put("c2DynamicList", caseData.buildC2DocumentDynamicList());
         }
@@ -73,7 +73,8 @@ public class MessageJudgeService {
                 caseData.getMessageJudgeEventData().getC2DynamicList(), mapper
             );
 
-            C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
+            C2DocumentBundle selectedC2DocumentBundle
+                = caseData.getC2DocumentFromAllApplicationBundlesByUUID(selectedC2Id);
             String documentFileNames = selectedC2DocumentBundle.getAllC2DocumentFileNames();
 
             data.put("relatedDocumentsLabel", documentFileNames);
@@ -89,7 +90,7 @@ public class MessageJudgeService {
         MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
         JudicialMessage judicialMessageReply = messageJudgeEventData.getJudicialMessageReply();
 
-        if (isReplyingToMessage(judicialMessageReply) && hasMatchingReplyEmaiAddress(judicialMessageReply)) {
+        if (isReplyingToMessage(judicialMessageReply) && hasMatchingReplyEmailAddress(judicialMessageReply)) {
             errors.add("The sender's and recipient's email address cannot be the same");
         }
 
@@ -149,7 +150,8 @@ public class MessageJudgeService {
 
         if (hasSelectedC2(caseData)) {
             UUID selectedC2Id = getDynamicListSelectedValue(messageJudgeEventData.getC2DynamicList(), mapper);
-            C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
+            C2DocumentBundle selectedC2DocumentBundle
+                = caseData.getC2DocumentFromAllApplicationBundlesByUUID(selectedC2Id);
 
             judicialMessageBuilder.relatedDocuments(selectedC2DocumentBundle.getAllC2DocumentReferences());
             judicialMessageBuilder.relatedDocumentFileNames(selectedC2DocumentBundle.getAllC2DocumentFileNames());
@@ -265,12 +267,8 @@ public class MessageJudgeService {
         return caseData.buildJudicialMessageDynamicList(selectedC2Id);
     }
 
-    private boolean hasC2Documents(CaseData caseData) {
-        return caseData.getC2DocumentBundle() != null;
-    }
-
     private boolean hasSelectedC2(CaseData caseData) {
-        return hasC2Documents(caseData)
+        return caseData.hasC2DocumentBundle()
             && caseData.getMessageJudgeEventData().getC2DynamicList() != null;
     }
 
@@ -278,7 +276,7 @@ public class MessageJudgeService {
         return !caseData.getJudicialMessages().isEmpty();
     }
 
-    private boolean hasMatchingReplyEmaiAddress(JudicialMessage judicialMessageReply) {
+    private boolean hasMatchingReplyEmailAddress(JudicialMessage judicialMessageReply) {
         return isNotEmpty(judicialMessageReply.getReplyFrom())
             && judicialMessageReply.getReplyFrom().equals(judicialMessageReply.getReplyTo());
     }

@@ -106,6 +106,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -284,13 +285,11 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
     private final PBAPayment temporaryPbaPayment;
-    private final List<Element<OtherApplicationsBundle>> otherApplicationsBundle;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
 
-    @JsonIgnore
-    public boolean hasC2DocumentBundle() {
-        return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();
+    public List<Element<AdditionalApplicationsBundle>> getAdditionalApplicationsBundle() {
+        return defaultIfNull(additionalApplicationsBundle, new ArrayList<>());
     }
 
     @JsonIgnore
@@ -312,17 +311,55 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public C2DocumentBundle getC2DocumentBundleByUUID(UUID elementId) {
-        return c2DocumentBundle.stream()
+    public C2DocumentBundle getC2DocumentFromAllApplicationBundlesByUUID(UUID elementId) {
+        return getAllC2DocumentBundles().stream()
             .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
             .map(Element::getValue)
             .findFirst()
             .orElse(null);
     }
 
+    @JsonIgnore
+    public C2DocumentBundle findC2DocumentBundleByUUID(UUID elementId) {
+        final List<Element<C2DocumentBundle>> c2Bundles = defaultIfNull(c2DocumentBundle, emptyList());
+        return c2Bundles.stream()
+            .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+    }
+
+    @JsonIgnore
+    public AdditionalApplicationsBundle findAdditionalApplicationsBundleByUUID(UUID elementId) {
+        return getAdditionalApplicationsBundle().stream()
+            .filter(bundle -> bundle.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+    }
+
+    @JsonIgnore
+    public List<Element<C2DocumentBundle>> getAllC2DocumentBundles() {
+        List<Element<C2DocumentBundle>> c2Bundles = new ArrayList<>(defaultIfNull(c2DocumentBundle, emptyList()));
+
+        getAdditionalApplicationsBundle().stream()
+            .filter(applicationsBundle -> applicationsBundle.getValue().getC2DocumentBundle() != null)
+            .forEach(bundle -> c2Bundles.add(element(bundle.getId(), bundle.getValue().getC2DocumentBundle())));
+
+        return c2Bundles;
+    }
+
+    @JsonIgnore
+    public boolean hasC2DocumentBundle() {
+        return isNotEmpty(c2DocumentBundle)
+            || getAdditionalApplicationsBundle().stream()
+            .anyMatch(applicationsBundle -> applicationsBundle.getValue().getC2DocumentBundle() != null);
+    }
+
     public DynamicList buildC2DocumentDynamicList(UUID selected) {
         IncrementalInteger i = new IncrementalInteger(1);
-        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+        return asDynamicList(
+            getAllC2DocumentBundles(), selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
     }
 
     public DynamicList buildC2DocumentDynamicList() {

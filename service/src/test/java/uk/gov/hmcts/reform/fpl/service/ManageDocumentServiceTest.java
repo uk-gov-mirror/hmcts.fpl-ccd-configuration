@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -39,6 +40,8 @@ import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADDITIONAL_APPLICATIONS_BUNDLE_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
@@ -48,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
+@SuppressWarnings("unchecked")
 class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
 
@@ -68,6 +72,8 @@ class ManageDocumentServiceTest {
 
     @Test
     void shouldPopulateFieldsWhenHearingAndC2DocumentBundleDetailsArePresentOnCaseData() {
+        UUID additionalApplicationsUuid = randomUUID();
+
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
             element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
@@ -79,15 +85,23 @@ class ManageDocumentServiceTest {
             element(buildC2DocumentBundle(futureDate.plusDays(2)))
         );
 
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(
+            element(additionalApplicationsUuid, AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(buildC2DocumentBundle(futureDate.plusDays(3))).build()));
+
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(c2DocumentBundle)
+            .additionalApplicationsBundle(additionalApplicationsBundle)
             .hearingDetails(hearingBookings)
             .build();
 
         DynamicList expectedHearingDynamicList = asDynamicList(hearingBookings, HearingBooking::toLabel);
 
         AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundle, null,
+        List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(c2DocumentBundle.get(0), c2DocumentBundle.get(1),
+            element(additionalApplicationsUuid, additionalApplicationsBundle.get(0).getValue().getC2DocumentBundle()));
+
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundles, null,
             documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
 
         ManageDocument expectedManageDocument = ManageDocument.builder()
@@ -575,10 +589,10 @@ class ManageDocumentServiceTest {
         C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(futureDate.plusDays(2));
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);
 
-        C2DocumentBundle existingC2DocumentBundle = buildC2DocumentBundle(futureDate.plusDays(2));
+        Element<C2DocumentBundle> existingC2DocumentBundle = element(buildC2DocumentBundle(futureDate.plusDays(2)));
 
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
-            element(existingC2DocumentBundle),
+            existingC2DocumentBundle,
             element(selectedC2DocumentId, selectedC2DocumentBundle)
         );
 
@@ -590,14 +604,110 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(newSupportingEvidenceBundle)
             .build();
 
-        List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
-            manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+        Map<String, Object> actualC2Bundle = manageDocumentService.buildFinalC2SupportingDocuments(caseData);
 
-        List<Element<SupportingEvidenceBundle>> updatedC2EvidenceBundle
-            = updatedC2DocumentBundle.get(1).getValue().getSupportingEvidenceBundle();
+        C2DocumentBundle expectedC2Bundle = selectedC2DocumentBundle.toBuilder()
+            .supportingEvidenceBundle(newSupportingEvidenceBundle).build();
 
-        assertThat(updatedC2EvidenceBundle).isEqualTo(newSupportingEvidenceBundle);
-        assertThat(updatedC2DocumentBundle.get(0).getValue()).isEqualTo(existingC2DocumentBundle);
+        Map<String, Object> expectedBundles = Map.of(
+            C2_DOCUMENTS_COLLECTION_KEY,
+            List.of(existingC2DocumentBundle, element(selectedC2DocumentId, expectedC2Bundle)));
+
+        assertThat(actualC2Bundle).isEqualTo(expectedBundles);
+    }
+
+    @Test
+    void shouldReturnUpdatedC2DocumentsBundleWhenSelectedC2DocumentExistsInAdditionalApplicationsBundle() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(futureDate.plusDays(2));
+
+        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);
+
+        Element<C2DocumentBundle> existingC2DocumentBundle = element(buildC2DocumentBundle(futureDate.plusDays(2)));
+
+        List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(existingC2DocumentBundle);
+
+        Element<AdditionalApplicationsBundle> applicationBundle1 = element(
+            AdditionalApplicationsBundle.builder().build());
+
+        List<Element<AdditionalApplicationsBundle>> applicationsBundle = List.of(
+            applicationBundle1,
+            element(selectedC2DocumentId, AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(selectedC2DocumentBundle)
+                .build()));
+
+        DynamicList c2DynamicList = buildDynamicList(selectedC2DocumentId);
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsSupportingC2List(c2DynamicList)
+            .c2DocumentBundle(c2DocumentBundleList)
+            .additionalApplicationsBundle(applicationsBundle)
+            .supportingEvidenceDocumentsTemp(newSupportingEvidenceBundle)
+            .build();
+
+        Map<String, Object> actualApplicationsBundle = manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+
+        C2DocumentBundle expectedC2Bundle = selectedC2DocumentBundle.toBuilder()
+            .supportingEvidenceBundle(newSupportingEvidenceBundle).build();
+
+        Map<String, Object> expectedBundles = Map.of(
+            ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
+            List.of(applicationBundle1, element(selectedC2DocumentId, AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(expectedC2Bundle)
+                .build())));
+
+        assertThat(actualApplicationsBundle).isEqualTo(expectedBundles);
+    }
+
+    @Test
+    void shouldAppendSupportingEvidenceToC2DocumentsBundleWhenSelectedC2ExistsInAdditionalApplicationsBundle() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+
+        Element<SupportingEvidenceBundle> supportingEvidencePast = element(SupportingEvidenceBundle.builder()
+            .name("past")
+            .dateTimeUploaded(futureDate.minusDays(2))
+            .uploadedBy(USER)
+            .build());
+
+        Element<SupportingEvidenceBundle> supportingEvidenceFuture = element(SupportingEvidenceBundle.builder()
+            .name("future")
+            .dateTimeUploaded(futureDate.plusDays(2))
+            .uploadedBy(USER)
+            .build());
+
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(
+            futureDate, List.of(supportingEvidenceFuture));
+
+        Element<AdditionalApplicationsBundle> applicationBundle1 = element(
+            AdditionalApplicationsBundle.builder().build());
+
+        List<Element<AdditionalApplicationsBundle>> applicationsBundle = List.of(
+            applicationBundle1,
+            element(selectedC2DocumentId, AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(selectedC2DocumentBundle)
+                .build()));
+
+        DynamicList c2DynamicList = buildDynamicList(selectedC2DocumentId);
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsSupportingC2List(c2DynamicList)
+            .c2DocumentBundle(List.of(element(C2DocumentBundle.builder().build())))
+            .additionalApplicationsBundle(applicationsBundle)
+            .supportingEvidenceDocumentsTemp(List.of(supportingEvidenceFuture, supportingEvidencePast))
+            .build();
+
+        Map<String, Object> updatedBundles = manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+
+        C2DocumentBundle updatedBundle = selectedC2DocumentBundle.toBuilder()
+            .supportingEvidenceBundle(List.of(supportingEvidencePast, supportingEvidenceFuture)).build();
+
+        Map<String, Object> expectedBundles = Map.of(
+            ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
+            List.of(applicationBundle1, element(selectedC2DocumentId, AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(updatedBundle)
+                .build())));
+
+        assertThat(updatedBundles).isEqualTo(expectedBundles);
     }
 
     @Test
@@ -621,8 +731,9 @@ class ManageDocumentServiceTest {
             .c2DocumentBundle(c2DocumentBundleList)
             .build();
 
-        List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
-            manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+        Map<String, Object> actualC2Bundles = manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+        List<Element<C2DocumentBundle>> updatedC2DocumentBundle
+            = (List<Element<C2DocumentBundle>>) actualC2Bundles.get(C2_DOCUMENTS_COLLECTION_KEY);
 
         LocalDateTime firstC2DocumentUploadTime = updatedC2DocumentBundle.get(0).getValue()
             .getSupportingEvidenceBundle().get(0).getValue()
@@ -744,11 +855,15 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(List.of(supportingEvidenceFuture, supportingEvidencePast))
             .build();
 
-        List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
-            manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+        Map<String, Object> updatedBundles = manageDocumentService.buildFinalC2SupportingDocuments(caseData);
 
-        assertThat(updatedC2DocumentBundle.get(0).getValue().getSupportingEvidenceBundle())
-            .isEqualTo(List.of(supportingEvidencePast, supportingEvidenceFuture));
+        C2DocumentBundle updatedBundle = selectedC2DocumentBundle.toBuilder()
+            .supportingEvidenceBundle(List.of(supportingEvidencePast, supportingEvidenceFuture)).build();
+
+        Map<String, Object> expectedBundles = Map.of(
+            C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)));
+
+        assertThat(updatedBundles).isEqualTo(expectedBundles);
     }
 
     @Test
@@ -765,7 +880,7 @@ class ManageDocumentServiceTest {
             .hearingFurtherEvidenceDocuments(new LinkedList<>(Arrays.asList(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .hearingName("Case Management hearing 1")
-                    .supportingEvidenceBundle(Arrays.asList())
+                    .supportingEvidenceBundle(emptyList())
                     .build()),
                 element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
                      .hearingName("Case Management hearing 2")
@@ -796,7 +911,7 @@ class ManageDocumentServiceTest {
             .hearingFurtherEvidenceDocuments(new LinkedList<>(Arrays.asList(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .hearingName("Case Management hearing 1")
-                    .supportingEvidenceBundle(Arrays.asList())
+                    .supportingEvidenceBundle(emptyList())
                     .build()),
                 element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
                     .hearingName("Case Management hearing 2")

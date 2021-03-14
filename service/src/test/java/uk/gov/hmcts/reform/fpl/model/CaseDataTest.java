@@ -9,9 +9,11 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -600,6 +602,29 @@ class CaseDataTest {
         }
 
         @Test
+        void shouldBuildDynamicC2DocumentBundleListFromC2DocumentsAndAdditionalDocumentsBundle() {
+            Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(futureDate.plusDays(1));
+
+            List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
+                AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle2).build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(c2Bundle1))
+                .additionalApplicationsBundle(additionalBundles).build();
+
+            List<Element<C2DocumentBundle>> expectedC2Bundles = List.of(
+                c2Bundle1, element(additionalBundles.get(0).getId(), c2Bundle2));
+
+            IncrementalInteger i = new IncrementalInteger(1);
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(expectedC2Bundles, null, documentBundle ->
+                    documentBundle.toLabel(i.getAndIncrement()));
+
+            assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
         void shouldBuildDynamicHearingListWithSelectorPropertyFromHearingDetails() {
             UUID selectedC2Id = randomUUID();
 
@@ -660,7 +685,25 @@ class CaseDataTest {
 
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
 
-            assertThat(caseData.getC2DocumentBundleByUUID(elementId)).isEqualTo(c2DocumentBundle);
+            assertThat(caseData.getC2DocumentFromAllApplicationBundlesByUUID(elementId)).isEqualTo(c2DocumentBundle);
+        }
+
+        @Test
+        void shouldReturnC2DocumentBundleWhenIdMatchesWithTheAdditionalApplicationsBundleId() {
+            UUID elementId = randomUUID();
+            C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().author("Additional Bundle").build();
+
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().author("Test").build()));
+
+            List<Element<AdditionalApplicationsBundle>> additionalC2Bundles = List.of(element(
+                elementId, AdditionalApplicationsBundle.builder().c2DocumentBundle(c2DocumentBundle).build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(c2DocumentBundles)
+                .additionalApplicationsBundle(additionalC2Bundles).build();
+
+            assertThat(caseData.getC2DocumentFromAllApplicationBundlesByUUID(elementId)).isEqualTo(c2DocumentBundle);
         }
 
         @Test
@@ -672,7 +715,90 @@ class CaseDataTest {
 
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
 
-            assertThat(caseData.getC2DocumentBundleByUUID(elementId)).isNull();
+            assertThat(caseData.getC2DocumentFromAllApplicationBundlesByUUID(elementId)).isNull();
+        }
+    }
+
+    @Nested
+    class GetAllC2DocumentBundles {
+
+        @Test
+        void shouldReturnC2DocumentBundlesFromC2DocumentsBundleAndAdditionalApplicationsBundle() {
+            UUID additionalApplicationsUuid = randomUUID();
+
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().author("Test1").build()));
+
+            List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(
+                element(additionalApplicationsUuid, AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().author("Test2").build()).build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(c2DocumentBundles)
+                .additionalApplicationsBundle(additionalApplicationsBundle).build();
+
+            assertThat(caseData.getAllC2DocumentBundles()).containsExactly(
+                c2DocumentBundles.get(0),
+                element(additionalApplicationsUuid,
+                    additionalApplicationsBundle.get(0).getValue().getC2DocumentBundle()));
+        }
+
+        @Test
+        void shouldReturnFromC2DocumentsBundleWhenAdditionalApplicationsBundleDoesNotHaveC2DocumentBundle() {
+            UUID additionalApplicationsUuid = randomUUID();
+
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().author("Test1").build()));
+
+            List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(
+                element(additionalApplicationsUuid, AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder().author("Test2").build()).build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(c2DocumentBundles)
+                .additionalApplicationsBundle(additionalApplicationsBundle).build();
+
+            assertThat(caseData.getAllC2DocumentBundles()).containsOnly(c2DocumentBundles.get(0));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnFromC2DocumentsBundleWhenAdditionalApplicationsBundlesAreNullOrEmpty(
+            List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle
+        ) {
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().author("Test1").build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(c2DocumentBundles)
+                .additionalApplicationsBundle(additionalApplicationsBundle).build();
+
+            assertThat(caseData.getAllC2DocumentBundles()).containsOnly(c2DocumentBundles.get(0));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnC2BundlesFromAdditionalApplicationsBundlesWhenC2DocumentsBundleAreNullOrEmpty(
+            List<Element<C2DocumentBundle>> c2DocumentsBundle
+        ) {
+            List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(
+                element(AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().author("Test2").build()).build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(c2DocumentsBundle)
+                .additionalApplicationsBundle(additionalApplicationsBundle).build();
+
+            assertThat(caseData.getAllC2DocumentBundles()).containsOnly(
+                element(additionalApplicationsBundle.get(0).getId(),
+                    additionalApplicationsBundle.get(0).getValue().getC2DocumentBundle()));
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenC2DocumentsBundleAndAdditionalApplicationsBundlesDoNotExist() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getAllC2DocumentBundles()).isEmpty();
         }
     }
 
@@ -699,6 +825,145 @@ class CaseDataTest {
         void shouldReturnFalseIfC2DocumentBundleIsNotPresentOnCaseData() {
             CaseData caseData = CaseData.builder().build();
             assertThat(caseData.hasC2DocumentBundle()).isFalse();
+        }
+
+        @Test
+        void shouldReturnTrueIfAdditionalApplicationsBundleContainsC2DocumentBundle() {
+            AdditionalApplicationsBundle applicationsBundle1 = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().build())
+                .build();
+
+            AdditionalApplicationsBundle applicationsBundle2 = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().build())
+                .otherApplicationsBundle(OtherApplicationsBundle.builder().build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(wrapElements(applicationsBundle1, applicationsBundle2))
+                .build();
+
+            assertThat(caseData.hasC2DocumentBundle()).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseIfAdditionalApplicationsBundleDoesNotHaveC2DocumentBundle() {
+            AdditionalApplicationsBundle applicationsBundle = AdditionalApplicationsBundle.builder()
+                .otherApplicationsBundle(OtherApplicationsBundle.builder().build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(wrapElements(applicationsBundle))
+                .build();
+
+            assertThat(caseData.hasC2DocumentBundle()).isFalse();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnFalseWhenCaseDataDoesNotHaveAdditionalApplicationsBundle(
+            List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles) {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(additionalApplicationsBundles)
+                .build();
+
+            assertThat(caseData.hasC2DocumentBundle()).isFalse();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnTrueWhenCaseDataContainsC2DocumentsBundleAndAdditionalApplicationsBundleIsNullOrEmpty(
+            List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles) {
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(wrapElements(C2DocumentBundle.builder().build()))
+                .additionalApplicationsBundle(additionalApplicationsBundles)
+                .build();
+
+            assertThat(caseData.hasC2DocumentBundle()).isTrue();
+        }
+    }
+
+    @Nested
+    class FindC2DocumentBundleByUUID {
+
+        @Test
+        void shouldReturnC2DocumentBundlesFromC2DocumentsBundleWithUUID() {
+            UUID selectedUuid = randomUUID();
+
+            C2DocumentBundle expectedC2Bundle = C2DocumentBundle.builder().author("Test2").build();
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().author("Test1").build()),
+                element(selectedUuid, expectedC2Bundle));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.findC2DocumentBundleByUUID(selectedUuid)).isEqualTo(expectedC2Bundle);
+        }
+
+        @Test
+        void shouldReturnNullWhenC2DocumentsBundleNotFoundForTheUUID() {
+            UUID selectedUuid = randomUUID();
+
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().author("Test1").build()),
+                element(C2DocumentBundle.builder().author("Test2").build()));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.findC2DocumentBundleByUUID(selectedUuid)).isNull();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNullWhenC2DocumentsBundleNotFoundForTheUUID(List<Element<C2DocumentBundle>> c2Bundles) {
+            UUID selectedUuid = randomUUID();
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2Bundles).build();
+
+            assertThat(caseData.findC2DocumentBundleByUUID(selectedUuid)).isNull();
+        }
+    }
+
+    @Nested
+    class FindAdditionalApplicationsBundleByUUID {
+
+        @Test
+        void shouldReturnAdditionalApplicationsForTheUUID() {
+            UUID selectedUuid = randomUUID();
+
+            AdditionalApplicationsBundle expectedBundle = AdditionalApplicationsBundle.builder()
+                .author("User1").build();
+
+            List<Element<AdditionalApplicationsBundle>> applicationsBundles = List.of(
+                element(AdditionalApplicationsBundle.builder().author("Test1").build()),
+                element(selectedUuid, expectedBundle));
+
+            CaseData caseData = CaseData.builder().additionalApplicationsBundle(applicationsBundles).build();
+
+            assertThat(caseData.findAdditionalApplicationsBundleByUUID(selectedUuid)).isEqualTo(expectedBundle);
+        }
+
+        @Test
+        void shouldReturnNullWhenAdditionalApplicationsBundleNotFoundForTheUUID() {
+            UUID selectedUuid = randomUUID();
+
+            List<Element<AdditionalApplicationsBundle>> applicationsBundles = List.of(
+                element(AdditionalApplicationsBundle.builder().author("Test1").build()),
+                element(AdditionalApplicationsBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder().additionalApplicationsBundle(applicationsBundles).build();
+
+            assertThat(caseData.findAdditionalApplicationsBundleByUUID(selectedUuid)).isNull();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNullWhenAdditionalApplicationsBundleIsNullOrEmpty(
+            List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
+            UUID selectedUuid = randomUUID();
+
+            CaseData caseData = CaseData.builder().additionalApplicationsBundle(additionalApplicationsBundle).build();
+
+            assertThat(caseData.findAdditionalApplicationsBundleByUUID(selectedUuid)).isNull();
         }
     }
 

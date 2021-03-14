@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -45,6 +46,7 @@ public class ManageDocumentService {
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
+    public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
     public static final String TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "supportingEvidenceDocumentsTemp";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocuments";
     public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
@@ -108,7 +110,7 @@ public class ManageDocumentService {
         Map<String, Object> listAndLabel = new HashMap<>();
 
         UUID selectedC2DocumentId = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
-        List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
+        List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getAllC2DocumentBundles();
 
         for (int i = 0; i < c2DocumentBundle.size(); i++) {
             if (c2DocumentBundle.get(i).getId().equals(selectedC2DocumentId)) {
@@ -146,7 +148,7 @@ public class ManageDocumentService {
 
     public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseData caseData) {
         UUID selectedC2 = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
-        C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2);
+        C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentFromAllApplicationBundlesByUUID(selectedC2);
 
         return getUserSpecificSupportingEvidences(c2DocumentBundle.getSupportingEvidenceBundle());
     }
@@ -231,28 +233,61 @@ public class ManageDocumentService {
         return updatedBundles;
     }
 
-    public List<Element<C2DocumentBundle>> buildFinalC2SupportingDocuments(CaseData caseData) {
+    public Map<String, Object> buildFinalC2SupportingDocuments(CaseData caseData) {
+        HashMap<String, Object> data = new HashMap<>();
         UUID selected = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
 
-        C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selected);
+        if (caseData.findC2DocumentBundleByUUID(selected) != null) {
+            data.put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2DocumentBundle(caseData, selected));
+        } else if (caseData.findAdditionalApplicationsBundleByUUID(selected) != null) {
+            data.put(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
+                updateAdditionalDocumentsBundle(caseData, selected));
+        }
 
-        List<Element<SupportingEvidenceBundle>> modifiedEvidence =
-            setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
-                c2DocumentBundle.getSupportingEvidenceBundle());
+        return data;
+    }
 
+    private List<Element<AdditionalApplicationsBundle>> updateAdditionalDocumentsBundle(
+        CaseData caseData, UUID selected) {
+        List<Element<AdditionalApplicationsBundle>> applicationsBundle = caseData.getAdditionalApplicationsBundle();
+
+        for (Element<AdditionalApplicationsBundle> element : applicationsBundle) {
+            if (selected.equals(element.getId())) {
+                List<Element<SupportingEvidenceBundle>> updateC2SupportingDocuments = updateC2SupportingDocuments(
+                    element.getValue().getC2DocumentBundle(),
+                    caseData.getSupportingEvidenceDocumentsTemp());
+                element.getValue().getC2DocumentBundle().setSupportingEvidenceBundle(updateC2SupportingDocuments);
+            }
+        }
+        return applicationsBundle;
+    }
+
+    private List<Element<C2DocumentBundle>> updatedC2DocumentBundle(CaseData caseData, UUID selected) {
         List<Element<C2DocumentBundle>> c2Bundles = caseData.getC2DocumentBundle();
+
         for (Element<C2DocumentBundle> element : c2Bundles) {
             if (selected.equals(element.getId())) {
-                List<Element<SupportingEvidenceBundle>> existingEvidence
-                    = new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
-
-                updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
-                sortByDateUploaded(existingEvidence);
-
-                element.getValue().setSupportingEvidenceBundle(existingEvidence);
+                element.getValue().setSupportingEvidenceBundle(updateC2SupportingDocuments(
+                    element.getValue(), caseData.getSupportingEvidenceDocumentsTemp()));
             }
         }
         return c2Bundles;
+    }
+
+    private List<Element<SupportingEvidenceBundle>> updateC2SupportingDocuments(
+        C2DocumentBundle selectedC2DocumentBundle,
+        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle
+    ) {
+        List<Element<SupportingEvidenceBundle>> modifiedEvidence = setDateTimeUploadedOnSupportingEvidence(
+            updatedSupportingEvidenceBundle, selectedC2DocumentBundle.getSupportingEvidenceBundle());
+
+        List<Element<SupportingEvidenceBundle>> existingEvidence
+            = new ArrayList<>(selectedC2DocumentBundle.getSupportingEvidenceBundle());
+
+        updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
+        sortByDateUploaded(existingEvidence);
+
+        return existingEvidence;
     }
 
     public List<Element<SupportingEvidenceBundle>> setDateTimeOnHearingFurtherEvidenceSupportingEvidence(

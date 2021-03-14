@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,23 +45,34 @@ class ManageDocumentsLAServiceTest {
 
     @Test
     void shouldPopulateFieldsWhenHearingAndC2DocumentBundleDetailsArePresentOnCaseData() {
+        UUID additionalApplicationsUuid = randomUUID();
+
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6)))
         );
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(
+            element(additionalApplicationsUuid, AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(buildC2DocumentBundle(futureDate.plusDays(3))).build()));
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
             element(buildC2DocumentBundle(futureDate.plusDays(2)))
         );
 
         CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(additionalApplicationsBundle)
             .c2DocumentBundle(c2DocumentBundle)
             .hearingDetails(hearingBookings)
             .build();
 
         DynamicList expectedHearingDynamicList = asDynamicList(hearingBookings, HearingBooking::toLabel);
 
-        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundle, null,
-            documentBundle -> documentBundle.toLabel(1));
+        List<Element<C2DocumentBundle>> expectedC2Bundles = List.of(c2DocumentBundle.get(0), element(
+            additionalApplicationsUuid, additionalApplicationsBundle.get(0).getValue().getC2DocumentBundle()));
+
+        AtomicInteger i = new AtomicInteger(1);
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(expectedC2Bundles, null,
+            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
 
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
