@@ -71,7 +71,7 @@ class UploadAdditionalApplicationsServiceTest {
     @BeforeEach()
     void init() {
         given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
+        given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 

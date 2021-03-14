@@ -602,6 +602,10 @@ class ManageDocumentServiceTest {
             .manageDocumentsSupportingC2List(c2DynamicList)
             .c2DocumentBundle(c2DocumentBundleList)
             .supportingEvidenceDocumentsTemp(newSupportingEvidenceBundle)
+            .additionalApplicationsBundle(List.of(element(
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .supportingEvidenceBundle(emptyList()).build()).build())))
             .build();
 
         Map<String, Object> actualC2Bundle = manageDocumentService.buildFinalC2SupportingDocuments(caseData);
@@ -883,7 +887,7 @@ class ManageDocumentServiceTest {
                     .supportingEvidenceBundle(emptyList())
                     .build()),
                 element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
-                     .hearingName("Case Management hearing 2")
+                    .hearingName("Case Management hearing 2")
                     .supportingEvidenceBundle(buildSupportingEvidenceBundle())
                     .build()))))
             .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
