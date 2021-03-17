@@ -46,6 +46,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentNew",
+    "ListElementCode": "x",
+    "FieldType": "Text",
+    "ElementLabel": "test",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "organisation!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
     "ListElementCode": "representedBy",
     "FieldType": "Collection",
     "FieldTypeParameter": "Text",

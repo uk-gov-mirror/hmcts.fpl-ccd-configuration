@@ -6,7 +6,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "organisation.OrganisationName",
     "EventElementLabel": " test",
-    "FieldDisplayOrder": "1",
+    "FieldDisplayOrder": 20,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -224,6 +224,16 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "representedBy",
     "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "05/08/2020",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "x",
+    "EventElementLabel": "Unregisterd org",
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "respondents1.organisation.OrganisationName=\"\""
   }
 ]
 
