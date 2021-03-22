@@ -6,7 +6,7 @@
     "DisplayOrder": "1",
     "QuestionText": "FamilyMan case number",
     "AnswerFieldType": "Text",
-    "Answer": "${familyManCaseNumber}:[SOLICITOR]",
+    "Answer": "${familyManCaseNumber}:[LASOLICITOR]",
     "QuestionId": "familyManCaseNumber"
   }
 ]
