@@ -1675,5 +1675,52 @@
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "partyId",
+    "FieldType": "Text",
+    "Label": "Party ID",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "partyType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "PartyType",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "persistRepresentedBy",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "leadRespondentIndicator",
+    "FieldType": "YesOrNo",
+    "Label": "Is this the first respondent?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representedBy",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Text",
+    "Label": "Represented by",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
