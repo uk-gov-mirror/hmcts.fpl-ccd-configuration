@@ -26,7 +26,7 @@ Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, cas
 
 Scenario('HMCTS admin enters FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  await enterFamilyManCaseNumberEventPage.enterCaseID('mockCaseID');
+  await enterFamilyManCaseNumberEventPage.enterCaseID(process.env.FAM_MAN || 'mockCaseID');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
   I.seeFamilyManNumber('mockCaseID');

@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -58,6 +62,11 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("caseLocalAuthorityName", updatedCaseData.getCaseLocalAuthorityName());
         caseDetails.putIfNotEmpty("localAuthorityPolicy", updatedCaseData.getLocalAuthorityPolicy());
         caseDetails.putIfNotEmpty("outsourcingPolicy", updatedCaseData.getOutsourcingPolicy());
+
+        caseDetails.putIfNotEmpty("respondent2Policy", OrganisationPolicy.builder().organisation(Organisation.builder().build()).orgPolicyCaseAssignedRole("[SOLICITOR]").build());
+        caseDetails.putIfNotEmpty("respondent3Policy", OrganisationPolicy.builder().organisation(Organisation.builder().build()).orgPolicyCaseAssignedRole("[LABARRISTER]").build());
+        caseDetails.putIfNotEmpty("respondent1", Respondent.builder().party(RespondentParty.builder().firstName("Mario").lastName("Bros").build()).build());
+        caseDetails.putIfNotEmpty("respondent2", Respondent.builder().party(RespondentParty.builder().firstName("Luigi").lastName("Bros").build()).build());
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs");
 

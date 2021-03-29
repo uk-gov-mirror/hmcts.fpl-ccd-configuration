@@ -4,9 +4,19 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "NoCChallenge",
     "DisplayOrder": "1",
-    "QuestionText": "FamilyMan case number",
+    "QuestionText": "First name",
     "AnswerFieldType": "Text",
-    "Answer": "${familyManCaseNumber}:[LASOLICITOR]",
-    "QuestionId": "familyManCaseNumber"
+    "Answer": "${respondent1.party.firstName}:[LASOLICITOR],${respondent2.party.firstName}:[SOLICITOR],${respondent3.party.firstName}:[LABARRISTER]",
+    "QuestionId": "lastname"
+  },
+  {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "NoCChallenge",
+    "DisplayOrder": "2",
+    "QuestionText": "Last name",
+    "AnswerFieldType": "Text",
+    "Answer": "${respondent1.party.lastName}:[LASOLICITOR],${respondent2.party.lastName}:[SOLICITOR],${respondent3.party.lastName}:[LABARRISTER]",
+    "QuestionId": "firstname"
   }
 ]

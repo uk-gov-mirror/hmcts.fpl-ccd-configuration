@@ -6,5 +6,45 @@
     "Label": "Change Organisation Request",
     "FieldType": "ChangeOrganisationRequest",
     "SecurityClassification": "PUBLIC"
+  },
+  {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent2Policy",
+    "Label": "Change Organisation Request",
+    "FieldType": "OrganisationPolicy",
+    "SecurityClassification": "PUBLIC"
+  },
+  {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent3Policy",
+    "Label": "Change Organisation Request",
+    "FieldType": "OrganisationPolicy",
+    "SecurityClassification": "PUBLIC"
+  },
+  {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent1",
+    "Label": "Respondent 1",
+    "FieldType": "RespondentNew",
+    "SecurityClassification": "PUBLIC"
+  },
+  {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent2",
+    "Label": "Respondent 2",
+    "FieldType": "RespondentNew",
+    "SecurityClassification": "PUBLIC"
+  },
+  {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent3",
+    "Label": "Respondent 3",
+    "FieldType": "RespondentNew",
+    "SecurityClassification": "PUBLIC"
   }
 ]
