@@ -7,6 +7,7 @@ const solicitor = require('../fixtures/solicitor.js');
 const others = require('../fixtures/others.js');
 const otherProceedings = require('../fixtures/otherProceedingData');
 const ordersAndDirectionsNeeded = require('../fixtures/ordersAndDirectionsNeeded.js');
+const tabAssertionHelper = require('../helpers/tab_assertion_helper');
 
 let caseId;
 
@@ -246,8 +247,9 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s first name'], respondents[0].solicitor.firstName);
   I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s last name'], respondents[0].solicitor.lastName);
   I.seeInTab(['Respondents 1', 'Representative', 'Email address'], respondents[0].solicitor.email);
-  I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'], 'Swansea City Council');
-  I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Address'], respondents[0].solicitor.organisationAddress);
+  tabAssertionHelper.seeOrganisationInTab(I, ['Respondents 1', 'Representative', 'Name'], 'Swansea City Council');
+  let organisationAddress = respondents[0].solicitor.organisationAddress;
+  tabAssertionHelper.seeOrganisationInTab(I, ['Respondents 1', 'Representative', 'Address'], [organisationAddress.buildingAndStreet.lineOne, organisationAddress.buildingAndStreet.lineTwo]);
   I.seeInTab(['Respondents 1', 'Managing office', 'Building and Street'], respondents[0].solicitor.address.buildingAndStreet.lineOne);
   I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 2'], respondents[0].solicitor.address.buildingAndStreet.lineTwo);
   I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 3'], respondents[0].solicitor.address.buildingAndStreet.lineThree);
