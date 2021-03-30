@@ -16,8 +16,8 @@ function seeOrganisationInTab(I, pathToField, fieldValue) {
   const fieldSelector = this.organisationTabFieldSelector(pathToField);
 
   if (Array.isArray(fieldValue)) {
-    fieldValue.forEach((value, index) => {
-      I.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
+    fieldValue.forEach((value) => {
+      I.seeElement(locate(`${fieldSelector}//tr[1]`).withText(value));
     });
   } else {
     I.seeElement(locate(fieldSelector).withText(fieldValue));

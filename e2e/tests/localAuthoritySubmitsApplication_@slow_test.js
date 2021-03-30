@@ -248,8 +248,8 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s last name'], respondents[0].solicitor.lastName);
   I.seeInTab(['Respondents 1', 'Representative', 'Email address'], respondents[0].solicitor.email);
   tabAssertionHelper.seeOrganisationInTab(I, ['Respondents 1', 'Representative', 'Name'], 'Swansea City Council');
-  let organisationAddress = respondents[0].solicitor.organisationAddress;
-  tabAssertionHelper.seeOrganisationInTab(I, ['Respondents 1', 'Representative', 'Address'], [organisationAddress.buildingAndStreet.lineOne, organisationAddress.buildingAndStreet.lineTwo]);
+  let address = Object.values(respondents[0].solicitor.organisationAddress);
+  tabAssertionHelper.seeOrganisationInTab(I, ['Respondents 1', 'Representative', 'Address'], address);
   I.seeInTab(['Respondents 1', 'Managing office', 'Building and Street'], respondents[0].solicitor.address.buildingAndStreet.lineOne);
   I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 2'], respondents[0].solicitor.address.buildingAndStreet.lineTwo);
   I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 3'], respondents[0].solicitor.address.buildingAndStreet.lineThree);
