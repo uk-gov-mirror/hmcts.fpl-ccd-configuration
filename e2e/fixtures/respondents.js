@@ -43,6 +43,7 @@ module.exports = [
         },
         town: 'Reading',
         postcode: 'RG4 7AA',
+        country: 'United Kingdom',
       },
     },
   },

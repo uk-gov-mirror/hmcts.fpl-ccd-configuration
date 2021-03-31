@@ -52,6 +52,7 @@ function seeOrganisationInTab(I, pathToField, fieldValue) {
 }
 
 module.exports = {
+  tabFieldSelector,
   seeInTab,
   seeOrganisationInTab,
   organisationTabFieldSelector,
