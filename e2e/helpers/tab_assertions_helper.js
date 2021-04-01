@@ -60,6 +60,15 @@ class TabAssertions extends Helper {
       helper.seeElement(locate(fieldSelector).withText(fieldValue));
     }
   }
+
+  dontSeeInTab(pathToField) {
+    this.dontSeeElement(locate(this.tabFieldSelector(pathToField)));
+  }
+
+  seeTextInTab (pathToField) {
+    const fieldSelector = this.tabFieldSelector(pathToField);
+    this.seeElement(locate(fieldSelector));
+  }
 }
 
 module.exports = TabAssertions;

@@ -156,15 +156,6 @@ module.exports = function () {
       this.seeElement(`//*[@class="markdown"]//h2/strong[text()='FamilyMan ID: ${familyManNumber}']`);
     },
 
-    seeTextInTab (pathToField) {
-      const fieldSelector = this.tabFieldSelector(pathToField);
-      this.seeElement(locate(fieldSelector));
-    },
-
-    dontSeeInTab(pathToField) {
-      this.dontSeeElement(locate(this.tabFieldSelector(pathToField)));
-    },
-
     seeCaseInSearchResult(caseId) {
       this.seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
     },
