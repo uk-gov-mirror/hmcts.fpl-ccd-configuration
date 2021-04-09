@@ -332,6 +332,10 @@ module.exports = function () {
       return caseId;
     },
 
+    async grantCaseAccess(caseId, user, role) {
+      await caseHelper.grantCaseAccess(caseId, user.email, role);
+    },
+
     async submitNewCase(user, name) {
       const caseName = name || `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
       const creator = user || config.swanseaLocalAuthorityUserOne;
