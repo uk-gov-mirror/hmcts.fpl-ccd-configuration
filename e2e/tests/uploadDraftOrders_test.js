@@ -79,8 +79,9 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], supportingDoc.name);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], supportingDoc.notes);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], supportingDoc.fileName);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Date and time uploaded', dateFormat(today, 'd mmm yyyy')]);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Uploaded by', 'kurt@swansea.gov.uk']);
+  const date = dateFormat(today, 'd mmm yyyy');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Date and time uploaded'], date);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Uploaded by'], 'kurt@swansea.gov.uk');
 });
 
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
@@ -211,7 +212,8 @@ const assertDraftOrders = function (I, collectionId, hearingName, orders, title,
     I.seeInTab([hearing, draft, 'Title'], order.title);
     I.seeInTab([hearing, draft, 'Order'], 'mockFile.docx');
     I.seeInTab([hearing, draft, 'Status'], order.status);
-    I.seeInTab([hearing, draft, 'Date sent'], dateFormat(today, 'd mmm yyyy'));
+    const date = dateFormat(today, 'd mmm yyyy');
+    I.seeInTab([hearing, draft, 'Date sent'], date);
 
     if (order.status === returnedStatus) {
       I.seeInTab([hearing, draft, 'Changes requested by judge'], changeRequestReason);
@@ -230,7 +232,8 @@ const assertSealedCMO = (I, collectionId, hearingName) => {
 
   I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
   I.seeInTab([sealedCMO, 'Hearing'], hearingName);
-  I.seeInTab([sealedCMO, 'Date issued'], dateFormat(today, 'd mmm yyyy'));
+  const date = dateFormat(today, 'd mmm yyyy');
+  I.seeInTab([sealedCMO, 'Date issued'], date);
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
 };
 
