@@ -42,6 +42,8 @@ class TabAssertions extends Helper {
       fieldValue.forEach((value, index) => {
         helper.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
       });
+    } else if (fieldValue == null) {
+      helper.seeElement(locate(fieldSelector));
     } else {
       helper.seeElement(locate(fieldSelector).withText(fieldValue));
     }
