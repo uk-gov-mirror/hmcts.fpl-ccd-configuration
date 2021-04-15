@@ -102,8 +102,8 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
         document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", DOCUMENT_CONTENT);
 
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class),
-            any())).willReturn(docmosisDocument);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+            .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
@@ -615,11 +615,10 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
         }
 
         private void generateEpoValues(CaseData.CaseDataBuilder builder) {
-            builder
-                .epoChildren(EPOChildren.builder()
-                    .description("Description")
-                    .descriptionNeeded("Yes")
-                    .build())
+            builder.epoChildren(EPOChildren.builder()
+                .description("Description")
+                .descriptionNeeded("Yes")
+                .build())
                 .epoPhrase(EPOPhrase.builder()
                     .includePhrase("Yes")
                     .build())
@@ -670,30 +669,22 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
         @Test
         void shouldPrePopulateAddressFieldIfPresentInCaseData() {
             String address = "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom";
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseData(), callbackType);
 
-            CaseData caseData = extractCaseData(callbackResponse);
+            CaseData caseData = extractCaseData(postMidEvent(buildCaseData(), callbackType));
 
-            assertThat(caseData.getEpoRemovalAddress().toString()).isEqualTo(address);
+            assertThat(caseData.getEpoRemovalAddress().getAddressAsString(", ")).isEqualTo(address);
         }
 
         @Test
         void shouldPrePopulateEpoTypeFieldIfPresentInCaseData() {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseData(), callbackType);
-
-            CaseData caseData = extractCaseData(callbackResponse);
+            CaseData caseData = extractCaseData(postMidEvent(buildCaseData(), callbackType));
 
             assertThat(caseData.getEpoType()).isEqualTo(PREVENT_REMOVAL);
         }
 
         @Test
         void shouldPrePopulateWhoIsExcludedFieldIfPresentInCaseData() {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseData(), callbackType);
-
-            CaseData caseData = extractCaseData(callbackResponse);
+            CaseData caseData = extractCaseData(postMidEvent(buildCaseData(), callbackType));
 
             assertThat(caseData.getEpoWhoIsExcluded()).isEqualTo("Test User");
         }
@@ -710,7 +701,6 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
                         .county("Armagh")
                         .country("United Kingdom")
                         .build())
-
                     .build())
                 .build();
         }
