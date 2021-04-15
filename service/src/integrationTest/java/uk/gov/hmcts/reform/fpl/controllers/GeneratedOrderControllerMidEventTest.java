@@ -53,7 +53,6 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -390,7 +389,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callbackType);
 
-            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
+            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
 
             assertThat(response.getData()).extracting("showCloseCaseFromOrderPage", "close_case_label")
                 .containsOnly("YES", EXPECTED_LABEL_TEXT);
@@ -403,7 +402,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callbackType);
 
-            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
+            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
 
             assertThat(response.getData()).extracting("showCloseCaseFromOrderPage", "close_case_label")
                 .containsOnly("NO", null);
@@ -676,7 +675,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
             CaseData caseData = extractCaseData(callbackResponse);
 
-            assertThat(caseData.getEpoRemovalAddress().toString().equals(address));
+            assertThat(caseData.getEpoRemovalAddress().toString()).isEqualTo(address);
         }
 
         @Test
@@ -686,7 +685,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
             CaseData caseData = extractCaseData(callbackResponse);
 
-            assertThat(caseData.getEpoType().equals(PREVENT_REMOVAL));
+            assertThat(caseData.getEpoType()).isEqualTo(PREVENT_REMOVAL);
         }
 
         @Test
@@ -696,7 +695,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
             CaseData caseData = extractCaseData(callbackResponse);
 
-            assertThat(caseData.getEpoWhoIsExcluded().equals("Test User"));
+            assertThat(caseData.getEpoWhoIsExcluded()).isEqualTo("Test User");
         }
 
         private CaseData buildCaseData() {

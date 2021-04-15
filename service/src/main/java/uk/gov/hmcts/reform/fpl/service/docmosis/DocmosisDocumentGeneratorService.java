@@ -29,12 +29,7 @@ public class DocmosisDocumentGeneratorService {
     private final ObjectMapper mapper;
 
     public DocmosisDocument generateDocmosisDocument(DocmosisData templateData, DocmosisTemplates template) {
-        return generateDocmosisDocument(templateData.toMap(mapper), template);
-    }
-
-    // REFACTOR: 08/04/2021 Remove this method in subsequent PR
-    public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData, DocmosisTemplates template) {
-        return generateDocmosisDocument(templateData, template, RenderFormat.PDF);
+        return generateDocmosisDocument(templateData.toMap(mapper), template, RenderFormat.PDF);
     }
 
     public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData, DocmosisTemplates template,
