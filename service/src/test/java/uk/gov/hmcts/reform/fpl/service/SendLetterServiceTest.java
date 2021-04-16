@@ -5,10 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -34,6 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -41,8 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class, SendLetterService.class})
+@ExtendWith(MockitoExtension.class)
 class SendLetterServiceTest {
 
     private static final String SERVICE_AUTH_TOKEN = "Service token";
@@ -62,25 +60,23 @@ class SendLetterServiceTest {
     private static final List<Recipient> RECIPIENTS = List.of(testRepresentative(), testRepresentative());
     private static final List<UUID> LETTERS_IDS = List.of(UUID.randomUUID(), UUID.randomUUID());
 
-    @Autowired
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+
     private SendLetterService underTest;
 
-    @Autowired
-    private Time time;
-
-    @MockBean
+    @Mock
     private SendLetterApi sendLetterApi;
 
-    @MockBean
+    @Mock
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @Mock
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @Mock
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
-    @MockBean
+    @Mock
     private AuthTokenGenerator authTokenGenerator;
 
     @Captor
@@ -88,11 +84,17 @@ class SendLetterServiceTest {
 
     @BeforeEach
     void setup() {
-        given(uploadDocumentService.uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename()))
-            .willReturn(UPLOADED_MAIN_DOCUMENT);
-        given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME))
+        underTest = new SendLetterService(
+            time, sendLetterApi, documentDownloadService, docmosisCoverDocumentsService, authTokenGenerator,
+            uploadDocumentService
+        );
+
+        given(uploadDocumentService.uploadDocument(
+            MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename(), PDF.getMediaType())
+        ).willReturn(UPLOADED_MAIN_DOCUMENT);
+        given(uploadDocumentService.uploadDocument(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME, PDF.getMediaType()))
             .willReturn(COVERSHEETS.get(0));
-        given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME))
+        given(uploadDocumentService.uploadDocument(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME, PDF.getMediaType()))
             .willReturn(COVERSHEETS.get(1));
         given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTERS_IDS.get(0)))
@@ -113,11 +115,13 @@ class SendLetterServiceTest {
         underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID, familyCaseNumber);
 
         verify(documentDownloadService).downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl());
-        verify(uploadDocumentService).uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename());
+        verify(uploadDocumentService).uploadDocument(
+            MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename(), PDF.getMediaType()
+        );
         verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(0));
         verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(1));
-        verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME);
-        verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME);
+        verify(uploadDocumentService).uploadDocument(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME, PDF.getMediaType());
+        verify(uploadDocumentService).uploadDocument(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME, PDF.getMediaType());
         verify(sendLetterApi, times(2))
             .sendLetter(eq(SERVICE_AUTH_TOKEN), letterWithPdfsRequestArgumentCaptor.capture());
 
@@ -134,8 +138,9 @@ class SendLetterServiceTest {
 
     @Test
     void shouldReturnSentDocumentsData() {
-        List<SentDocument> sentDocuments = underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID,
-            FAMILY_CASE_NUMBER);
+        List<SentDocument> sentDocuments = underTest.send(
+            MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID, FAMILY_CASE_NUMBER
+        );
 
         String formattedDate = DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy");
 

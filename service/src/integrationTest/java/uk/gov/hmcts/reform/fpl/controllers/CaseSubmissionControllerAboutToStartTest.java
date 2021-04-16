@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
@@ -58,7 +59,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
         givenCurrentUserWithName("Emma Taylor");
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true)))
             .willReturn(document);
-        given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
+        given(uploadDocumentService.uploadDocument(DOCUMENT_CONTENT, "2313.pdf", PDF.getMediaType()))
             .willReturn(document);
     }
 

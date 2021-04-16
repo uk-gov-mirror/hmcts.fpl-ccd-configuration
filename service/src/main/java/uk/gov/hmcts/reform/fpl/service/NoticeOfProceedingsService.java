@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
@@ -113,7 +114,9 @@ public class NoticeOfProceedingsService {
 
     private List<Document> uploadDocuments(List<DocmosisDocument> documents) {
         return documents.stream()
-            .map(document -> uploadDocumentService.uploadPDF(document.getBytes(), document.getDocumentTitle()))
+            .map(document -> uploadDocumentService.uploadDocument(
+                document.getBytes(), document.getDocumentTitle(), RenderFormat.PDF.getMediaType()
+            ))
             .collect(Collectors.toList());
     }
 

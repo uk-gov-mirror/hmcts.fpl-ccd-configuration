@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
@@ -16,9 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
     private static final Document DOCUMENT = document();
 
@@ -61,6 +63,7 @@ class DocumentServiceTest {
         when(documentGeneratorService.generateDocmosisDocument(template, ORDER))
             .thenReturn(DocmosisDocument.builder().bytes(bytes).documentTitle("order.pdf").build());
 
-        when(uploadDocumentService.uploadPDF(eq(bytes), captor.capture())).thenReturn(DOCUMENT);
+        when(uploadDocumentService.uploadDocument(eq(bytes), captor.capture(), eq(PDF.getMediaType())))
+            .thenReturn(DOCUMENT);
     }
 }

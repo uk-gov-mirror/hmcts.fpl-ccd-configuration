@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -156,11 +157,12 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
     @BeforeEach
     void init() {
         givenFplService();
-        given(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
+        given(uploadDocumentService.uploadDocument(ORDER_BINARY, ORDER.getFilename(), PDF.getMediaType()))
             .willReturn(ORDER_DOCUMENT);
-        given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
-            .willReturn(COVERSHEET_REPRESENTATIVE);
-        given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
+        given(uploadDocumentService.uploadDocument(
+            COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf", PDF.getMediaType())
+        ).willReturn(COVERSHEET_REPRESENTATIVE);
+        given(uploadDocumentService.uploadDocument(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf", PDF.getMediaType()))
             .willReturn(COVERSHEET_RESPONDENT);
         given(documentDownloadService.downloadDocument(anyString()))
             .willReturn(ORDER_BINARY);

@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
@@ -154,17 +155,18 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         givenFplService();
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn(ORDER_BINARY);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
+        when(uploadDocumentService.uploadDocument(ORDER_BINARY, ORDER.getFilename(), PDF.getMediaType()))
             .thenReturn(ORDER_DOCUMENT);
 
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue())))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
-        when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
-            .thenReturn(COVERSHEET_REPRESENTATIVE);
+        when(uploadDocumentService.uploadDocument(
+            COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf", PDF.getMediaType())
+        ).thenReturn(COVERSHEET_REPRESENTATIVE);
 
         when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty())))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
-        when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
+        when(uploadDocumentService.uploadDocument(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf", PDF.getMediaType()))
             .thenReturn(COVERSHEET_RESPONDENT);
 
         when(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))

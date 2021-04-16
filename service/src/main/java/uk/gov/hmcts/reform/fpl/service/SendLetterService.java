@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -73,7 +74,7 @@ public class SendLetterService {
     }
 
     private DocumentReference uploadDocument(byte[] documentBinary, String filename) {
-        Document uploadedDocument = uploadDocumentService.uploadPDF(documentBinary, filename);
+        Document uploadedDocument = uploadDocumentService.uploadDocument(documentBinary, filename, PDF.getMediaType());
 
         return buildFromDocument(uploadedDocument);
     }

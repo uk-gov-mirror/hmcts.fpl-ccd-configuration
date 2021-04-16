@@ -74,6 +74,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.REMOTE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
@@ -89,6 +90,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_H
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
@@ -613,7 +615,7 @@ class ManageHearingsServiceTest {
     @Test
     void shouldSendNoticeOfHearingIfRequested() {
         final DocmosisNoticeOfHearing docmosisData = DocmosisNoticeOfHearing.builder().build();
-        final DocmosisDocument docmosisDocument = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
+        final DocmosisDocument docmosisDocument = testDocmosisDocument(DOCUMENT_CONTENT);
 
         final HearingBooking hearingToUpdate = randomHearing();
         final CaseData caseData = CaseData.builder()
@@ -624,7 +626,9 @@ class ManageHearingsServiceTest {
             .willReturn(docmosisData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(docmosisData, NOTICE_OF_HEARING))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(eq(docmosisDocument.getBytes()), anyString())).willReturn(DOCUMENT);
+        given(uploadDocumentService.uploadDocument(
+            eq(docmosisDocument.getBytes()), anyString(), eq(PDF.getMediaType()))
+        ).willReturn(DOCUMENT);
 
         service.sendNoticeOfHearing(caseData, hearingToUpdate);
 
@@ -632,9 +636,11 @@ class ManageHearingsServiceTest {
 
         verify(noticeOfHearingGenerationService).getTemplateData(caseData, hearingToUpdate);
         verify(docmosisDocumentGeneratorService).generateDocmosisDocument(docmosisData, NOTICE_OF_HEARING);
-        verify(uploadDocumentService).uploadPDF(
-            TestDataHelper.DOCUMENT_CONTENT,
-            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
+        verify(uploadDocumentService).uploadDocument(
+            DOCUMENT_CONTENT,
+            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()),
+            PDF.getMediaType()
+        );
     }
 
     @Test

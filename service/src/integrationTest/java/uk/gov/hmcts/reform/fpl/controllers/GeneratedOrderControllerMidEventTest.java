@@ -73,6 +73,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -104,7 +105,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+        given(uploadDocumentService.uploadDocument(any(), any(), eq(PDF.getMediaType()))).willReturn(document);
     }
 
     private List<Element<Child>> createChildren(String... firstNames) {
@@ -451,7 +452,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
             verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(DocmosisData.class),
                 eq(templateName));
-            verify(uploadDocumentService).uploadPDF(DOCUMENT_CONTENT, fileName);
+            verify(uploadDocumentService).uploadDocument(DOCUMENT_CONTENT, fileName, PDF.getMediaType());
 
             assertThat(updatedCaseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDraftDocument());
         }
@@ -461,7 +462,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
             postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), callbackType);
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(DocmosisData.class), any());
-            verify(uploadDocumentService, never()).uploadPDF(any(), any());
+            verify(uploadDocumentService, never()).uploadDocument(any(), any(), eq(PDF.getMediaType()));
         }
 
         @AfterEach

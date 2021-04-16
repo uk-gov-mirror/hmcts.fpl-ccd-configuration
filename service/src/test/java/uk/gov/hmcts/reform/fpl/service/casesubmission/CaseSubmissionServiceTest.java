@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CaseSubmissionService.class, JacksonAutoConfiguration.class})
 class CaseSubmissionServiceTest {
-    private static final byte[] PDF = TestDataHelper.DOCUMENT_CONTENT;
+    private static final byte[] PDF_DATA = TestDataHelper.DOCUMENT_CONTENT;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -58,9 +59,9 @@ class CaseSubmissionServiceTest {
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
 
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(new DocmosisDocument("case_submission_c110a.pdf", PDF));
+            .willReturn(new DocmosisDocument("case_submission_c110a.pdf", PDF_DATA));
 
-        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document());
+        given(uploadDocumentService.uploadDocument(any(), any(), eq(PDF.getMediaType()))).willReturn(document());
 
         givenCaseData = populatedCaseData();
     }
@@ -73,6 +74,6 @@ class CaseSubmissionServiceTest {
         DocmosisCaseSubmission caseSubmission = caseSubmissionDataCaptor.getValue();
         assertThat(caseSubmission).isEqualTo(expectedCaseSubmission);
 
-        verify(uploadDocumentService).uploadPDF(eq(PDF), any());
+        verify(uploadDocumentService).uploadDocument(eq(PDF_DATA), any(), eq(PDF.getMediaType()));
     }
 }

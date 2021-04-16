@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -227,10 +228,10 @@ class NoticeOfProceedingsServiceTest {
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6A))
             .willReturn(c6aDocument);
 
-        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
+        given(uploadDocumentService.uploadDocument(PDF, C6.getDocumentTitle(), RenderFormat.PDF.getMediaType()))
             .willReturn(document);
 
-        given(uploadDocumentService.uploadPDF(PDF, C6A.getDocumentTitle()))
+        given(uploadDocumentService.uploadDocument(PDF, C6A.getDocumentTitle(), RenderFormat.PDF.getMediaType()))
             .willReturn(document);
 
         List<Element<DocumentBundle>> noticeOfProceedings

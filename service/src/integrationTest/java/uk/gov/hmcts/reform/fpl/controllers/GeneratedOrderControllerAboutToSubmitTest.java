@@ -50,6 +50,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -65,6 +66,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -97,7 +99,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
-        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+        given(uploadDocumentService.uploadDocument(any(), any(), eq(PDF.getMediaType()))).willReturn(document);
     }
 
     @Test

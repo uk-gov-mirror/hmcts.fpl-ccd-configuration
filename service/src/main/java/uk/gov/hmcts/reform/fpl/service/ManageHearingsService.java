@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -270,10 +271,14 @@ public class ManageHearingsService {
     public void sendNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
         if (YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
             DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
-            DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
-                NOTICE_OF_HEARING);
-            Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
-                NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
+            DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
+                notice, NOTICE_OF_HEARING
+            );
+            Document document = uploadDocumentService.uploadDocument(
+                docmosisDocument.getBytes(),
+                NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()),
+                RenderFormat.PDF.getMediaType()
+            );
 
             hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
         }

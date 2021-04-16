@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
@@ -70,7 +71,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractCallbackTes
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), eq(C6)))
             .willReturn(docmosisDocument);
 
-        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
+        given(uploadDocumentService.uploadDocument(PDF, C6.getDocumentTitle(), RenderFormat.PDF.getMediaType()))
             .willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(buildCaseData());

@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
@@ -79,7 +80,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         doReturn(document).when(caseSubmissionService).generateSubmittedFormPDF(any(), eq(false));
 
-        given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
+        given(uploadDocumentService.uploadDocument(DOCUMENT_CONTENT, "2313.pdf", PDF.getMediaType()))
             .willReturn(document);
         given(featureToggleService.isRestrictedFromCaseSubmission("FPLA"))
             .willReturn(true);

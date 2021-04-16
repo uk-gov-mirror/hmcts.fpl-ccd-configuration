@@ -72,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -292,11 +293,13 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
 
-        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
-            .willReturn(NOTICE_OF_HEARING_DOCUMENT);
-        given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
-            .willReturn(COVERSHEET_REPRESENTATIVE);
-        given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
+        given(uploadDocumentService.uploadDocument(
+            NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename(), PDF.getMediaType())
+        ).willReturn(NOTICE_OF_HEARING_DOCUMENT);
+        given(uploadDocumentService.uploadDocument(
+            COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf", PDF.getMediaType())
+        ).willReturn(COVERSHEET_REPRESENTATIVE);
+        given(uploadDocumentService.uploadDocument(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf", PDF.getMediaType()))
             .willReturn(COVERSHEET_RESPONDENT);
 
         given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue()))

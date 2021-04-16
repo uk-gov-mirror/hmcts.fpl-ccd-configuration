@@ -33,6 +33,7 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -94,7 +96,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
-        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+        given(uploadDocumentService.uploadDocument(any(), any(), eq(PDF.getMediaType()))).willReturn(document);
 
         HearingBooking newHearing = testHearing(now().plusDays(2));
         CaseData initialCaseData = CaseData.builder()

@@ -1,26 +1,27 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.successfulDocumentUploadResponse;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.unsuccessfulDocumentUploadResponse;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class UploadDocumentServiceTest {
 
     private static final String USER_ID = "1";
@@ -50,9 +51,10 @@ class UploadDocumentServiceTest {
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willReturn(request);
 
-        Document document = uploadDocumentService.uploadPDF(new byte[0], "file");
+        byte[] pdf = new byte[0];
+        Document document = uploadDocumentService.uploadDocument(pdf, "file", PDF.getMediaType());
 
-        Assertions.assertThat(document).isEqualTo(request.getEmbedded().getDocuments().get(0));
+        assertThat(document).isEqualTo(request.getEmbedded().getDocuments().get(0));
     }
 
     @Test
@@ -60,7 +62,7 @@ class UploadDocumentServiceTest {
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willReturn(unsuccessfulDocumentUploadResponse());
 
-        assertThatThrownBy(() -> uploadDocumentService.uploadPDF(new byte[0], "file"))
+        assertThatThrownBy(() -> uploadDocumentService.uploadDocument(new byte[0], "file", PDF.getMediaType()))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("Document upload failed due to empty result");
     }
@@ -70,7 +72,7 @@ class UploadDocumentServiceTest {
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willThrow(new RuntimeException("Something bad happened"));
 
-        assertThatThrownBy(() -> uploadDocumentService.uploadPDF(new byte[0], "file"))
+        assertThatThrownBy(() -> uploadDocumentService.uploadDocument(new byte[0], "file", PDF.getMediaType()))
             .isInstanceOf(Exception.class)
             .hasMessage("Something bad happened");
     }

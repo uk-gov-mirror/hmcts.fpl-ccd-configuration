@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.assertj.core.api.InstanceOfAssertFactory;
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -11,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -34,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -42,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerServiceRouteMidEventTest extends AbstractCallbackTest {
-    private static final byte[] PDF = testDocumentBinaries();
+    private static final byte[] PDF_BINARIES = testDocumentBinaries();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final String DRAFT_ORDER_FILE_NAME = "draft-standard-directions-order.pdf";
     private static final long CASE_NUMBER = 1234123412341234L;
@@ -61,9 +66,10 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
     @BeforeEach
     void setup() {
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF));
+            .willReturn(new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF_BINARIES));
 
-        given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME)).willReturn(document);
+        given(uploadDocumentService.uploadDocument(PDF_BINARIES, DRAFT_ORDER_FILE_NAME, PDF.getMediaType()))
+            .willReturn(document);
     }
 
     @Test
@@ -87,18 +93,23 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
 
     @Test
     void shouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+        Judge allocatedJudge = getJudgeAndLegalAdvisor();
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(buildTestDirections())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
-                .put("allocatedJudge", getJudgeAndLegalAdvisor())
+                .put("allocatedJudge", allocatedJudge)
                 .build())
             .id(CASE_NUMBER)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "service-route");
+        CaseData caseData = extractCaseData(callbackResponse);
 
-        assertThat(callbackResponse.getData().get("judgeAndLegalAdvisor"))
-            .isEqualToComparingOnlyGivenFields(Map.of("judgeTitle", HIS_HONOUR_JUDGE, "JudgeLastName", "Davidson"));
+        JudgeAndLegalAdvisor migratedJudge = JudgeAndLegalAdvisor.from(allocatedJudge).toBuilder()
+            .useAllocatedJudge("Yes")
+            .build();
+
+        assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isEqualTo(migratedJudge);
     }
 
     @Test

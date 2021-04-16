@@ -65,6 +65,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -76,7 +77,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
-    private static final byte[] PDF = testDocumentBinaries();
+    private static final byte[] PDF_BINARIES = testDocumentBinaries();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final Document DOCUMENT = document();
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2020, 1, 20, 11, 11, 11);
@@ -112,15 +113,16 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
 
     @BeforeEach
     void setup() {
-        DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
+        DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF_BINARIES);
 
         given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(eq(PDF), filename.capture())).willReturn(DOCUMENT);
+        given(uploadDocumentService.uploadDocument(eq(PDF_BINARIES), filename.capture(), eq(PDF.getMediaType())))
+            .willReturn(DOCUMENT);
 
         given(docmosisService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), eq(C6)))
             .willReturn(docmosisDocument);
 
-        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
+        given(uploadDocumentService.uploadDocument(PDF_BINARIES, C6.getDocumentTitle(), PDF.getMediaType()))
             .willReturn(DOCUMENT);
 
         given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))

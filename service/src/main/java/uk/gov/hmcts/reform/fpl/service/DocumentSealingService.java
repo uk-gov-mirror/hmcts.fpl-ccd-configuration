@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
@@ -17,6 +18,7 @@ import java.io.UncheckedIOException;
 
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -45,7 +47,9 @@ public class DocumentSealingService {
 
         String newFilename = updateExtension(document.getFilename(), PDF);
 
-        return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFilename));
+        return buildFromDocument(uploadDocumentService.uploadDocument(
+            documentContents, newFilename, RenderFormat.PDF.getMediaType()
+        ));
     }
 
     private static byte[] sealDocument(byte[] binaries) {

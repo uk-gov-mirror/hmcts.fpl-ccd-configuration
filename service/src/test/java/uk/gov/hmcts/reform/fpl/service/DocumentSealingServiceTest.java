@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -55,12 +56,14 @@ class DocumentSealingServiceTest {
         when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
             .thenReturn(inputDocumentBinaries);
         when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(inputDocumentBinaries);
-        when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
+        when(uploadDocumentService.uploadDocument(any(), any(), eq(PDF.getMediaType()))).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
             .sealDocument(inputDocumentReference);
 
-        verify(uploadDocumentService).uploadPDF(actualDocumentBinaries.capture(), eq(newFileName));
+        verify(uploadDocumentService).uploadDocument(
+            actualDocumentBinaries.capture(), eq(newFileName), eq(PDF.getMediaType())
+        );
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
         assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
     }
@@ -77,13 +80,14 @@ class DocumentSealingServiceTest {
         when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
             .thenReturn(inputDocumentBinaries);
         when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(inputDocumentBinaries);
-        when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
+        when(uploadDocumentService.uploadDocument(any(), any(), eq(PDF.getMediaType()))).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
             .sealDocument(inputDocumentReference);
 
-        verify(uploadDocumentService)
-            .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
+        verify(uploadDocumentService).uploadDocument(
+            actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()), eq(PDF.getMediaType())
+        );
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
         assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
     }

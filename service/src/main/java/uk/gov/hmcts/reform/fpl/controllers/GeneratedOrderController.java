@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
@@ -189,7 +190,7 @@ public class GeneratedOrderController extends CallbackController {
         if (!orderTypeAndDocument.isUploaded() && caseData.hasSelectedTemporaryJudge(tempJudge)) {
             Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
 
-            if (!error.isEmpty()) {
+            if (error.isPresent()) {
                 return respond(caseDetails, List.of(error.get()));
             }
         }
@@ -310,19 +311,21 @@ public class GeneratedOrderController extends CallbackController {
             .build();
     }
 
-    private Document getDocument(CaseData caseData,
-                                 OrderStatus orderStatus) {
-
+    private Document getDocument(CaseData caseData, OrderStatus orderStatus) {
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
         caseData.setGeneratedOrderStatus(orderStatus);
         DocmosisGeneratedOrder orderTemplateData = service.getOrderTemplateData(caseData);
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            orderTemplateData, typeAndDoc.getDocmosisTemplate());
+            orderTemplateData, typeAndDoc.getDocmosisTemplate()
+        );
 
-        Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
-            service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
+        Document document = uploadDocumentService.uploadDocument(
+            docmosisDocument.getBytes(),
+            service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()),
+            PDF.getMediaType()
+        );
 
         if (orderStatus == DRAFT) {
             document.originalDocumentName = "draft-" + document.originalDocumentName;

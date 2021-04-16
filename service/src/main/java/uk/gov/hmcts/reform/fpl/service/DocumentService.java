@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentService {
@@ -21,7 +23,7 @@ public class DocumentService {
 
         String documentTitle = getDocumentTitle(templateData.getDraftbackground(), document);
 
-        return uploadDocumentService.uploadPDF(document.getBytes(), documentTitle);
+        return uploadDocumentService.uploadDocument(document.getBytes(), documentTitle, PDF.getMediaType());
     }
 
     private String getDocumentTitle(String draftBackground, DocmosisDocument document) {
