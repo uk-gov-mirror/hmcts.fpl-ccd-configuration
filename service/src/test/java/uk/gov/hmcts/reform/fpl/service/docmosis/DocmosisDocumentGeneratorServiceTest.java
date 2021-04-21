@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
@@ -22,7 +22,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
@@ -53,13 +52,11 @@ class DocmosisDocumentGeneratorServiceTest {
     @Captor
     private ArgumentCaptor<HttpEntity<DocmosisRequest>> requestCaptor;
 
+    @InjectMocks
     private DocmosisDocumentGeneratorService underTest;
 
     @BeforeEach
     void setUp() {
-        mapper = new ObjectMapper();
-        underTest = new  DocmosisDocumentGeneratorService(restTemplate, configuration, mapper);
-
         when(restTemplate.exchange(eq(configuration.getUrl() + "/rs/render"),
             eq(HttpMethod.POST), requestCaptor.capture(), eq(byte[].class))).thenReturn(tornadoResponse);
 
@@ -70,24 +67,24 @@ class DocmosisDocumentGeneratorServiceTest {
     void shouldInvokeTornadoForPDF() {
         DocmosisDocument docmosisDocument = underTest.generateDocmosisDocument(parameters, C6, PDF);
 
-        HttpEntity<DocmosisRequest> request = requestCaptor.getValue();
+        DocmosisRequest request = requestCaptor.getValue().getBody();
 
         assertThat(docmosisDocument.getBytes()).isEqualTo(RESPONSE_BODY);
-        assertThat(request.getBody().getTemplateName()).isEqualTo(C6.getTemplate());
-        assertThat(request.getBody().getOutputFormat()).isEqualTo("pdf");
-        assertThat(request.getBody().getData()).isEqualTo(parameters);
+        assertThat(request.getTemplateName()).isEqualTo(C6.getTemplate());
+        assertThat(request.getOutputFormat()).isEqualTo("pdf");
+        assertThat(request.getData()).isEqualTo(parameters);
     }
 
     @Test
     void shouldInvokeTornadoForWord() {
         DocmosisDocument docmosisDocument = underTest.generateDocmosisDocument(parameters, C6, WORD);
 
-        HttpEntity<DocmosisRequest> request = requestCaptor.getValue();
+        DocmosisRequest request = requestCaptor.getValue().getBody();
 
         assertThat(docmosisDocument.getBytes()).isEqualTo(RESPONSE_BODY);
-        assertThat(request.getBody().getTemplateName()).isEqualTo(C6.getTemplate());
-        assertThat(request.getBody().getOutputFormat()).isEqualTo("doc");
-        assertThat(request.getBody().getData()).isEqualTo(parameters);
+        assertThat(request.getTemplateName()).isEqualTo(C6.getTemplate());
+        assertThat(request.getOutputFormat()).isEqualTo("doc");
+        assertThat(request.getData()).isEqualTo(parameters);
     }
 
     @Test
@@ -96,9 +93,9 @@ class DocmosisDocumentGeneratorServiceTest {
 
         underTest.generateDocmosisDocument(data, C6);
 
-        HttpEntity<DocmosisRequest> request = requestCaptor.getValue();
+        DocmosisRequest request = requestCaptor.getValue().getBody();
 
-        assertThat(request.getBody().getData()).isEqualTo(parameters);
+        assertThat(request.getData()).isEqualTo(parameters);
     }
 }
 
